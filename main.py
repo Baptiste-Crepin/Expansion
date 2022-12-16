@@ -1,6 +1,27 @@
+class Player():
+    def __init__(self, number: int, color: str):
+        self.__number = number
+        self.__color = color
+
+    def getNumber(self) -> int:
+        return self.__number
+
+    def getColor(self) -> str:
+        return self.__color
+
+    def setNumber(self, value: int) -> None:
+        self.__number = value
+
+    def setNumber(self, value: str) -> None:
+        self.__color = value
+
+    def __repr__(self) -> str:
+        return self.getColor()
+
+
 class Case():
 
-    def __init__(self, pawnNumber: int, player: int) -> None:
+    def __init__(self, pawnNumber: int, player: object) -> None:
         self.__pawnNumber = pawnNumber
         self.__player = player
 
@@ -17,19 +38,33 @@ class Case():
         self.__player = value
 
     def __repr__(self) -> str:
-        return str((self.getPawnNumber(), self.getPlayer()))
+        return str((self.getPawnNumber(), (self.getPlayer().getNumber(), self.getPlayer().getColor())))
 
 
 class Jeu():
-    def __init__(self, width: int, height: int, NumberOfPlayers) -> None:
+    def __init__(self, width: int, height: int, NumberOfPlayers: int) -> None:
         self.__width = self.validWidth(width)
         self.__height = self.validHeight(height)
         self.__NumberOfPlayers = self.validNumberOfPlayers(NumberOfPlayers)
-        print(self.__height)
         self.__grid = self.createGrid()
 
         while not self.engoughSpaceForPlayer():
             self.expandBoard(self.getWidth()+1, self.getHeight()+1)
+
+    def validWidth(self, width) -> None:
+        width = 3 if width < 3 else width
+        width = 12 if width > 12 else width
+        return width
+
+    def validHeight(self, height) -> None:
+        height = 3 if height < 3 else height
+        height = 10 if height > 10 else height
+        return height
+
+    def validNumberOfPlayers(self, NumberOfPlayers) -> None:
+        NumberOfPlayers = 2 if NumberOfPlayers < 2 else NumberOfPlayers
+        NumberOfPlayers = 8 if NumberOfPlayers > 8 else NumberOfPlayers
+        return NumberOfPlayers
 
     def getWidth(self) -> int:
         return self.__width
@@ -56,32 +91,8 @@ class Jeu():
         self.__grid = value
 
     def createGrid(self) -> list:
-        return [[Case(0, 0) for x in range(self.getWidth())]
+        return [[Case(0, Player(0, "#FFFFFF")) for x in range(self.getWidth())]
                 for y in range(self.getHeight())]
-
-    def validWidth(self, width) -> None:
-        if width < 3:
-            self.setWidth(3)
-            return self.getWidth()
-        if width > 12:
-            self.setWidth(12)
-            return self.getWidth()
-
-    def validHeight(self, height) -> None:
-        if height < 3:
-            self.setHeight(3)
-            return self.getHeight()
-        if height > 10:
-            self.setHeight(10)
-            return self.getHeight()
-
-    def validNumberOfPlayers(self, NumberOfPlayer) -> None:
-        if NumberOfPlayer < 2:
-            self.setNumberOfPlayers(2)
-            return self.getNumberOfPlayers()
-        if NumberOfPlayer > 8:
-            self.setNumberOfPlayers(8)
-            return self.getNumberOfPlayers()
 
     def display(self) -> None:
         for row in self.getGrid():
@@ -103,6 +114,3 @@ if __name__ == "__main__":
     # doctest.testmod(verbose=True)
     J1 = Jeu(1, 1, 9999)
     J1.display()
-    print(J1.engoughSpaceForPlayer())
-    J1.display()
-    print(J1.getNumberOfPlayers())
