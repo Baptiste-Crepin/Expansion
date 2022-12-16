@@ -108,9 +108,31 @@ class Jeu():
             return True
         return False
 
+    def inGrid(self, coord: tuple) -> bool:
+        return not (coord[0] <= 0 or
+                    coord[1] <= 0 or
+                    coord[0] >= self.getWidth() or
+                    coord[1] >= self.getHeight())
+
+    def NumberOfNeighbours(self, coord: tuple) -> int:
+        neighbours = 4
+
+        if coord[0]-1 < 0:
+            neighbours -= 1
+        if coord[1]-1 < 0:
+            neighbours -= 1
+        if coord[0]+1 >= self.getWidth():
+            neighbours -= 1
+        if coord[1]+1 >= self.getHeight():
+            neighbours -= 1
+        return neighbours
+
 
 if __name__ == "__main__":
-    # import doctest
-    # doctest.testmod(verbose=True)
     J1 = Jeu(1, 1, 9999)
     J1.display()
+    #print(J1.inGrid((2, 2)))
+    #print(J1.NumberOfNeighbours((0, 0)))
+    print(J1.NumberOfNeighbours((1, 1)))
+    print(J1.NumberOfNeighbours((2, 1)))
+    print(J1.NumberOfNeighbours((2, 2)))
