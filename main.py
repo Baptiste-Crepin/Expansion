@@ -70,43 +70,77 @@ class Jeu():
         return False
 
     def inGrid(self, coord: tuple) -> bool:
-        return not (coord[0] <= 0 or
-                    coord[1] <= 0 or
+        return not (coord[0] < 0 or
+                    coord[1] < 0 or
                     coord[0] >= self.getWidth() or
                     coord[1] >= self.getHeight())
 
-    def NumberOfNeighbours(self, coord: tuple) -> int:
-        neighbours = 4
+    def getNeighbours(self, coord: tuple) -> list:
+        neighbours = []
 
-        if coord[0]-1 < 0:
-            neighbours -= 1
-        if coord[1]-1 < 0:
-            neighbours -= 1
-        if coord[0]+1 >= self.getWidth():
-            neighbours -= 1
-        if coord[1]+1 >= self.getHeight():
-            neighbours -= 1
+        if coord[0]-1 >= 0:
+            neighbours.append(self.getCell((coord[0]-1, coord[1])))
+
+        if coord[1]-1 >= 0:
+            neighbours.append(self.getCell((coord[0], coord[1]-1)))
+
+        if coord[0]+1 < self.getWidth():
+            neighbours.append(self.getCell((coord[0]+1, coord[1])))
+
+        if coord[1]+1 < self.getHeight():
+            neighbours.append(self.getCell((coord[0], coord[1]+1)))
+
         return neighbours
+
+    def numberOfNeighbours(self, coord: tuple) -> int:
+        return len(self.getNeighbours(coord))
+
+    def getCell(self, coord: tuple) -> object:
+        return self.getGrid()[coord[0]][coord[1]]
 
     def placePawn(self, coord: tuple, player: Player) -> None:
         if not self.inGrid(coord):
             return False
 
-        cell = self.getGrid()[coord[0]][coord[1]]
+        cell = self.getCell(coord)
+
+        if cell.getPlayer().getNumber() != 0 and cell.getPlayer() != player:
+            return False
+
         cell.setPawnNumber(cell.getPawnNumber() + 1)
         cell.setPlayer(player)
+
+    def expandPawn(self, coord: tuple, player: Player) -> None:
+        cell = self.getCell(coord)
+        print(cell.getPawnNumber(), self.numberOfNeighbours(coord))
+        if self.numberOfNeighbours(coord) > cell.getPawnNumber():
+            return False
+
+        cell.setPawnNumber(0)
+        cell.setPlayer(Player(0, "#FFFFFF"))
+
+        for neighbour in self.getNeighbours(coord):
+            neighbour.setPlayer(player)
+            neighbour.setPawnNumber(neighbour.getPawnNumber()+1)
+            self.expandPawn(neighbour.getCoordinates(), player)
 
 
 if __name__ == "__main__":
     G1 = Jeu(1, 1, 9999)
     P1 = Player(1, "#FF0000")
+    P2 = Player(2, "#000000")
+    print()
+    print("First Display")
     G1.display()
     print()
-    # print(G1.inGrid((2, 2)))
-    # print(G1.NumberOfNeighbours((0, 0)))
-    # print(G1.NumberOfNeighbours((1, 1)))
-    G1.placePawn((1, 1), P1)
+
+    G1.placePawn((0, 0), P1)
     G1.display()
     print()
-    G1.placePawn((1, 1), P1)
+    G1.placePawn((0, 1), P2)
     G1.display()
+    print()
+    G1.placePawn((0, 0), P1)
+    G1.expandPawn((0, 0), P1)
+    G1.display()
+    print()
