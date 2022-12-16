@@ -1,44 +1,5 @@
-class Player():
-    def __init__(self, number: int, color: str):
-        self.__number = number
-        self.__color = color
-
-    def getNumber(self) -> int:
-        return self.__number
-
-    def getColor(self) -> str:
-        return self.__color
-
-    def setNumber(self, value: int) -> None:
-        self.__number = value
-
-    def setNumber(self, value: str) -> None:
-        self.__color = value
-
-    def __repr__(self) -> str:
-        return self.getColor()
-
-
-class Case():
-
-    def __init__(self, pawnNumber: int, player: object) -> None:
-        self.__pawnNumber = pawnNumber
-        self.__player = player
-
-    def getPawnNumber(self) -> int:
-        return self.__pawnNumber
-
-    def getPlayer(self) -> int:
-        return self.__player
-
-    def setPawnNumber(self, value: int) -> None:
-        self.__pawnNumber = value
-
-    def setPlayer(self, value: int) -> None:
-        self.__player = value
-
-    def __repr__(self) -> str:
-        return str((self.getPawnNumber(), (self.getPlayer().getNumber(), self.getPlayer().getColor())))
+from Player import Player
+from Case import Case
 
 
 class Jeu():
@@ -91,7 +52,7 @@ class Jeu():
         self.__grid = value
 
     def createGrid(self) -> list:
-        return [[Case(0, Player(0, "#FFFFFF")) for x in range(self.getWidth())]
+        return [[Case(0, (x, y), Player(0, "#FFFFFF")) for x in range(self.getWidth())]
                 for y in range(self.getHeight())]
 
     def display(self) -> None:
@@ -127,12 +88,25 @@ class Jeu():
             neighbours -= 1
         return neighbours
 
+    def placePawn(self, coord: tuple, player: Player) -> None:
+        if not self.inGrid(coord):
+            return False
+
+        cell = self.getGrid()[coord[0]][coord[1]]
+        cell.setPawnNumber(cell.getPawnNumber() + 1)
+        cell.setPlayer(player)
+
 
 if __name__ == "__main__":
-    J1 = Jeu(1, 1, 9999)
-    J1.display()
-    #print(J1.inGrid((2, 2)))
-    #print(J1.NumberOfNeighbours((0, 0)))
-    print(J1.NumberOfNeighbours((1, 1)))
-    print(J1.NumberOfNeighbours((2, 1)))
-    print(J1.NumberOfNeighbours((2, 2)))
+    G1 = Jeu(1, 1, 9999)
+    P1 = Player(1, "#FF0000")
+    G1.display()
+    print()
+    # print(G1.inGrid((2, 2)))
+    # print(G1.NumberOfNeighbours((0, 0)))
+    # print(G1.NumberOfNeighbours((1, 1)))
+    G1.placePawn((1, 1), P1)
+    G1.display()
+    print()
+    G1.placePawn((1, 1), P1)
+    G1.display()
