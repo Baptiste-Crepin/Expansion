@@ -15,40 +15,43 @@ class Jeu():
         while not self.engoughSpaceForPlayer():
             self.expandBoard(self.getWidth()+1, self.getHeight()+1)
 
-    def validWidth(self, width) -> None:
-        if width < 3:
-            print("The minimal width is 3, the width has been increased")
-            width = 3
-        if width > 12:
-            print("The maximal width is 12, the width has been decreased")
-            width = 12
+    def validWidth(self, width: int, min=3, max=12) -> None:
+        if width < min:
+            print(f"The minimal width is {min}, the width has been increased")
+            width = min
+        if width > max:
+            print(f"The maximal width is {max}, the width has been decreased")
+            width = max
         return width
 
-    def validHeight(self, height) -> None:
-        if height < 3:
-            print("The minimal height is 3, the height has been increased")
-            height = 3
-        if height > 10:
-            print("The maximal height is 10, the height has been decreased")
-            height = 10
+    def validHeight(self, height: int, min=3, max=10) -> None:
+        if height < min:
+            print(
+                f"The minimal height is {min}, the height has been increased")
+            height = min
+        if height > max:
+            print(
+                f"The maximal height is {max}, the height has been decreased")
+            height = max
         return height
 
-    def validNumberOfPlayers(self, NumberOfPlayers) -> None:
-        if NumberOfPlayers < 2:
+    def validNumberOfPlayers(self, NumberOfPlayers, min=2, max=8) -> None:
+        print("MIN", min)
+        if NumberOfPlayers < min:
             print(
-                "The minimal amount of player is 2, the amount of player has been increased")
-            NumberOfPlayers = 2
-        if NumberOfPlayers > 8:
+                f"The minimal amount of player is {min}, the amount of player has been increased")
+            NumberOfPlayers = min
+        if NumberOfPlayers > max:
             print(
-                "The maximal amount of player is 8, the amount of player has been decreased")
-            NumberOfPlayers = 8
+                f"The maximal amount of player is {max}, the amount of player has been decreased")
+            NumberOfPlayers = max
         return NumberOfPlayers
 
-    def validNumberOfBots(self, NumberOfBots) -> None:
-        if NumberOfBots + self.getNumberOfPlayers() > 8:
+    def validNumberOfBots(self, NumberOfBots, min=2, max=8) -> None:
+        if NumberOfBots + self.getNumberOfPlayers() > max:
             print(
-                "The maximal amount of player is 8 including bots, the amount of bots has been decreased")
-            NumberOfBots = 8 - self.getNumberOfPlayers()
+                f"The maximal amount of player is {max} including bots, the amount of bots has been decreased to {max - self.getNumberOfPlayers()}")
+            NumberOfBots = max - self.getNumberOfPlayers()
         return NumberOfBots
 
     def getWidth(self) -> int:
@@ -79,10 +82,10 @@ class Jeu():
         self.__grid = value
 
     def setNumberOfPlayers(self, value: int) -> None:
-        self.__NumberOfPlayers = self.validNumberOfPlayers(value)
+        self.__NumberOfPlayers = value
 
     def setNumberOfBots(self, value: int) -> None:
-        self.__NumberOfBots = self.validNumberOfBots(value)
+        self.__NumberOfBots = value
 
     def setPlayerList(self, value: list) -> None:
         self.__PlayerList = value
@@ -92,8 +95,7 @@ class Jeu():
                 for y in range(self.getHeight())]
 
     def addbots(self, value: int) -> None:
-        print("The bots will be added the the players you already have")
-        self.setNumberOfBots(value)
+        self.setNumberOfBots(self.validNumberOfBots(value))
 
     def createPlayerList(self) -> list:
         playerList = [Player(x+1) for x in range(self.getNumberOfPlayers())]
@@ -210,11 +212,15 @@ def yesNoInput(message: str) -> int:
 
 def createGame():
     Game = Jeu(intInput("width"), intInput("height"))
-    Game.setNumberOfPlayers(intInput("player Number"))
 
-    if yesNoInput("Do you want to play against bots ?"):
+    if yesNoInput("Do you want to play against bots ? \nThe bots will be added to the the players you already have"):
+        Game.setNumberOfPlayers(
+            Game.validNumberOfPlayers(intInput("player Number"), min=1))
+        print(f"you can add {8 - Game.getNumberOfPlayers()} Bots maximum")
         Game.addbots(intInput("How many bots do you want ?"))
-
+    else:
+        Game.setNumberOfPlayers(
+            Game.validNumberOfPlayers(intInput("player Number"), min=2))
     Game.createPlayerList()
     Game.display()
     return Game
