@@ -1,32 +1,55 @@
 from Player import Player
 from Case import Case
+from Bot import Bot
 
 
 class Jeu():
-    def __init__(self, width: int, height: int, NumberOfPlayers: int) -> None:
+    def __init__(self, width: int, height: int) -> None:
         self.__width = self.validWidth(width)
         self.__height = self.validHeight(height)
-        self.__NumberOfPlayers = self.validNumberOfPlayers(NumberOfPlayers)
-        self.__PlayerList = self.createPlayerList()
         self.__grid = self.createGrid()
+        self.__NumberOfPlayers = 0
+        self.__NumberOfBots = 0
+        self.__PlayerList = []
 
         while not self.engoughSpaceForPlayer():
             self.expandBoard(self.getWidth()+1, self.getHeight()+1)
 
     def validWidth(self, width) -> None:
-        width = 3 if width < 3 else width
-        width = 12 if width > 12 else width
+        if width < 3:
+            print("The minimal width is 3, the width has been increased")
+            width = 3
+        if width > 12:
+            print("The maximal width is 12, the width has been decreased")
+            width = 12
         return width
 
     def validHeight(self, height) -> None:
-        height = 3 if height < 3 else height
-        height = 10 if height > 10 else height
+        if height < 3:
+            print("The minimal height is 3, the height has been increased")
+            height = 3
+        if height > 10:
+            print("The maximal height is 10, the height has been decreased")
+            height = 10
         return height
 
     def validNumberOfPlayers(self, NumberOfPlayers) -> None:
-        NumberOfPlayers = 2 if NumberOfPlayers < 2 else NumberOfPlayers
-        NumberOfPlayers = 8 if NumberOfPlayers > 8 else NumberOfPlayers
+        if NumberOfPlayers < 2:
+            print(
+                "The minimal amount of player is 2, the amount of player has been increased")
+            NumberOfPlayers = 2
+        if NumberOfPlayers > 8:
+            print(
+                "The maximal amount of player is 8, the amount of player has been decreased")
+            NumberOfPlayers = 8
         return NumberOfPlayers
+
+    def validNumberOfBots(self, NumberOfBots) -> None:
+        if NumberOfBots + self.getNumberOfPlayers() > 8:
+            print(
+                "The maximal amount of player is 8 including bots, the amount of bots has been decreased")
+            NumberOfBots = 8 - self.getNumberOfPlayers()
+        return NumberOfBots
 
     def getWidth(self) -> int:
         return self.__width
@@ -39,6 +62,9 @@ class Jeu():
 
     def getNumberOfPlayers(self) -> int:
         return self.__NumberOfPlayers
+
+    def getNumberOfBots(self) -> int:
+        return self.__NumberOfBots
 
     def getPlayerList(self) -> int:
         return self.__PlayerList
@@ -53,7 +79,10 @@ class Jeu():
         self.__grid = value
 
     def setNumberOfPlayers(self, value: int) -> None:
-        self.__NumberOfPlayers = value
+        self.__NumberOfPlayers = self.validNumberOfPlayers(value)
+
+    def setNumberOfBots(self, value: int) -> None:
+        self.__NumberOfBots = self.validNumberOfBots(value)
 
     def setPlayerList(self, value: list) -> None:
         self.__PlayerList = value
@@ -62,13 +91,22 @@ class Jeu():
         return [[Case(0, (x, y), Player(0)) for x in range(self.getWidth())]
                 for y in range(self.getHeight())]
 
+    def addbots(self, value: int) -> None:
+        print("The bots will be added the the players you already have")
+        self.setNumberOfBots(value)
+
     def createPlayerList(self) -> list:
-        print("11", [Player(x+1) for x in range(self.getNumberOfPlayers())])
-        return [Player(x+1) for x in range(self.getNumberOfPlayers())]
+        playerList = [Player(x+1) for x in range(self.getNumberOfPlayers())]
+        if self.getNumberOfBots() != 0:
+            bots = [Bot(len(playerList)+x+1)
+                    for x in range(self.getNumberOfBots())]
+            playerList += bots
+        self.__PlayerList = playerList
 
     def display(self) -> None:
         for row in self.getGrid():
             print(" | ".join(map(str, row)))
+        print()
 
     def expandBoard(self, width: int, height: int):
         self.setWidth(width)
@@ -106,7 +144,7 @@ class Jeu():
     def numberOfNeighbours(self, coord: tuple) -> int:
         return len(self.getNeighbours(coord))
 
-    def getCell(self, coord: tuple) -> object:
+    def getCell(self, coord: tuple) -> Case:
         return self.getGrid()[coord[0]][coord[1]]
 
     def placePawn(self, coord: tuple, player: Player) -> None:
@@ -137,7 +175,6 @@ class Jeu():
     def playerInGrid(self, player):
         for row in self.getGrid():
             for cell in row:
-                #print(cell.getPlayer(), player)
                 if cell.getPlayer().getNumber() == player.getNumber():
                     return True
 
@@ -146,42 +183,80 @@ class Jeu():
     def updatePlayers(self) -> None:
         for player in self.getPlayerList():
             if not self.playerInGrid(player):
-                print("LOST", player)
+                print("LOST", player.getNumber())
                 self.getPlayerList().remove(player)
 
     def checkWin(self):
         if len(self.getPlayerList()) == 1:
-            #print(len(self.getPlayerList()), self.getPlayerList())
             return True
         return False
 
 
+def intInput(message: str) -> int:
+    try:
+        return int(input("\n" + message + ":  "))
+    except ValueError:
+        return intInput("\nIncorect Value, please enter a number")
+
+
+def yesNoInput(message: str) -> int:
+    while True:
+        inp = input("\n" + message + " : (y/n)  ").lower()
+        if inp == "y":
+            return True
+        if inp == "n":
+            return False
+
+
+def createGame():
+    Game = Jeu(intInput("width"), intInput("height"))
+    Game.setNumberOfPlayers(intInput("player Number"))
+
+    if yesNoInput("Do you want to play against bots ?"):
+        Game.addbots(intInput("How many bots do you want ?"))
+
+    Game.createPlayerList()
+    Game.display()
+    return Game
+
+
 def play():
-    G1 = Jeu(int(input("width")), int(input("height")),
-             int(input("player Number")))
-    P1 = G1.getPlayerList()[0]
-    P2 = G1.getPlayerList()[1]
-    print()
-    print("First Display")
-    G1.display()
-    print()
+    Game = createGame()
 
-    for player in G1.getPlayerList():
-        coordo = (int(input("col"))-1, int(input("row"))-1)
-        G1.placePawn(coordo, player)
-        G1.expandPawn(coordo, player)
-        G1.display()
-        print()
+    # play one time for all the players before checking and eliminating them
+    for player in Game.getPlayerList():
+        print(player.getNumber())
+        if isinstance(player, Bot):
+            coordo = player.pickCoordo(Game)
+            while Game.placePawn(coordo, player) == False:
+                coordo = player.pickCoordo(Game)
+        else:
+            coordo = (intInput("row")-1, intInput("Col")-1)
+            while Game.placePawn(coordo, player) == False:
+                coordo = (intInput("row")-1, intInput("Col")-1)
 
-    while not G1.checkWin():
-        for player in G1.getPlayerList():
+        Game.expandPawn(coordo, player)
+        Game.display()
+
+    # game loop until game is over
+    while not Game.checkWin():
+        for player in Game.getPlayerList():
             print(player.getNumber())
-            coordo = (int(input("col"))-1, int(input("row"))-1)
-            G1.placePawn(coordo, player)
-            G1.expandPawn(coordo, player)
-            G1.display()
-            G1.updatePlayers()
-            print()
+            if isinstance(player, Bot):
+                coordo = player.pickCoordo(Game)
+                while Game.placePawn(coordo, player) == False:
+                    coordo = player.pickCoordo(Game)
+            else:
+                coordo = (intInput("row")-1, intInput("Col")-1)
+                while Game.placePawn(coordo, player) == False:
+                    coordo = (intInput("row")-1, intInput("Col")-1)
+
+            Game.expandPawn(coordo, player)
+            Game.display()
+            Game.updatePlayers()
+
+    print(
+        f'The game has ended and Player {Game.getPlayerList()[0].getNumber()} Won')
 
 
 if __name__ == "__main__":
