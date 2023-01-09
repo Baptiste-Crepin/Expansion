@@ -1,39 +1,52 @@
-from tkinter import *
-import tkinter
+import tkinter as tk
 
-root = Tk()
-frame=Frame(root)
-Grid.rowconfigure(root, 0, weight=1)
-Grid.columnconfigure(root, 0, weight=1)
-frame.grid(row=0, column=0, sticky=N+S+E+W)
-grid=Frame(frame)
-grid.grid(sticky=N+S+E+W, column=0, row=7, columnspan=2)
-Grid.rowconfigure(frame, 7, weight=1)
-Grid.columnconfigure(frame, 0, weight=1)
 
-active="grey"
-defaut="white"
+root = tk.Tk()
 
-def main(height,width):
-  for x in range(width):
-    for y in range(height):
-      btn = tkinter.Button(frame, bg=defaut)
-      btn.grid(column=x, row=y, sticky=N+S+E+W)
-      btn["command"] = lambda btn=btn: click(btn)
+canvas = tk.Canvas(root, width=400, height=400)
+canvas.pack()
 
-  for x in range(width):
-    Grid.columnconfigure(frame, x, weight=1)
+rectangles = []
+colors = []
+playercolor = ["BLACK","RED","ORANGE","YELLOW","GREEN","BLUE","PURPLE","PINK","TEAL"]
+c = 1
 
-  for y in range(height):
-    Grid.rowconfigure(frame, y, weight=1)
+for i in range(10):
+    rectangles.append([])
+    colors.append([])
+    for j in range(10):
+        x0 = j * 40
+        y0 = i * 40
+        x1 = x0 + 40
+        y1 = y0 + 40
+        rectangles[i].append(canvas.create_rectangle(x0, y0, x1, y1, outline=playercolor[c], width=2))
+        colors[i].append('white')
 
-  return frame
+def change_color(event):
+  global c
+  
+  x, y = event.x, event.y
+  row = y // 40
+  col = x // 40
+  rectangle = rectangles[row][col]
 
-def click(button):
-  if(button["bg"] == active):
-    button["bg"] = defaut
+  if colors[row][col] == 'white':
+    canvas.itemconfig(rectangle, fill='red')
+    colors[row][col] = 'red'
+    c=c+1
   else:
-    button["bg"] = active
+    canvas.itemconfig(rectangle, fill='white')
+    colors[row][col] = 'white'
+    c=c+1
 
-w= main(5,5)
-tkinter.mainloop()
+  for i in range(10):
+    for j in range(10):
+      rectangle = rectangles[i][j]
+      canvas.itemconfig(rectangle, outline=playercolor[c], width=2)
+    
+  if c == 8:
+    c = 0
+
+canvas.bind('<Button-1>', change_color)
+
+root.mainloop()
