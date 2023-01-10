@@ -24,4 +24,4 @@ class Case():
         self.__player = value
 
     def __repr__(self) -> str:
-        return str((self.getPawnNumber(), (self.getPlayer().getNumber(), self.getPlayer().getColor())))
+        return str((self.getPawnNumber(), (self.getPlayer().getNumber())))
