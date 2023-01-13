@@ -17,26 +17,27 @@ class Jeu():
 
     def validWidth(self, width: int, min=3, max=12) -> None:
         if width < min:
-            print(f"The minimal width is {min}, the width has been increased")
+            print(
+                f"The minimal number of columns is {min}, the width has been increased")
             width = min
         if width > max:
-            print(f"The maximal width is {max}, the width has been decreased")
+            print(
+                f"The maximal number of columns is {max}, the width has been decreased")
             width = max
         return width
 
     def validHeight(self, height: int, min=3, max=10) -> None:
         if height < min:
             print(
-                f"The minimal height is {min}, the height has been increased")
+                f"The minimal number of rows is {min}, the height has been increased")
             height = min
         if height > max:
             print(
-                f"The maximal height is {max}, the height has been decreased")
+                f"The maximal number of rows is {max}, the height has been decreased")
             height = max
         return height
 
     def validNumberOfPlayers(self, NumberOfPlayers, min=2, max=8) -> None:
-        print("MIN", min)
         if NumberOfPlayers < min:
             print(
                 f"The minimal amount of player is {min}, the amount of player has been increased")
@@ -164,7 +165,7 @@ class Jeu():
     def expandPawn(self, coord: tuple, player: Player) -> None:
         cell = self.getCell(coord)
         if self.numberOfNeighbours(coord) > cell.getPawnNumber():
-            return False
+            return
 
         cell.setPawnNumber(0)
         cell.setPlayer(Player(0))
@@ -172,6 +173,13 @@ class Jeu():
         for neighbour in self.getNeighbours(coord):
             neighbour.setPlayer(player)
             neighbour.setPawnNumber(neighbour.getPawnNumber()+1)
+
+        # prevent infinite recursion when game is over
+        self.updatePlayers()
+        if self.checkWin():
+            return
+
+        for neighbour in self.getNeighbours(coord):
             self.expandPawn(neighbour.getCoordinates(), player)
 
     def playerInGrid(self, player):
@@ -211,16 +219,17 @@ def yesNoInput(message: str) -> int:
 
 
 def createGame():
-    Game = Jeu(intInput("width"), intInput("height"))
+    Game = Jeu(intInput("How many columns ? between 3 and 12"),
+               intInput("How many rows ? between 3 and 10"))
 
-    if yesNoInput("Do you want to play against bots ? \nThe bots will be added to the the players you already have"):
+    if yesNoInput("Do you want to play against bots ?"):
         Game.setNumberOfPlayers(
-            Game.validNumberOfPlayers(intInput("player Number"), min=1))
-        print(f"you can add {8 - Game.getNumberOfPlayers()} Bots maximum")
-        Game.addbots(intInput("How many bots do you want ?"))
+            Game.validNumberOfPlayers(intInput("How many players ? minimum 1"), min=1))
+        Game.addbots(
+            intInput(f"you can add {8 - Game.getNumberOfPlayers()} Bots maximum, how many do you want to play against"))
     else:
         Game.setNumberOfPlayers(
-            Game.validNumberOfPlayers(intInput("player Number"), min=2))
+            Game.validNumberOfPlayers(intInput("How many players ? minimum 2"), min=2))
     Game.createPlayerList()
     Game.display()
     return Game
