@@ -28,14 +28,6 @@ curentPlayer = 0
 for i in range(grid.getHeight()):
     rectangles.append([])
     image_container.append([])
-canvas = tk.Canvas(root, width=grid.getWidth()*40, height=grid.getHeight()*40)
-canvas.pack()
-
-rectangles = []
-curentPlayer = 0
-
-for i in range(grid.getHeight()):
-    rectangles.append([])
 
     for j in range(grid.getWidth()):
         x0 = j * 40
@@ -47,15 +39,11 @@ for i in range(grid.getHeight()):
         rectangles[i].append(canvas.create_rectangle(
             x0, y0, x1, y1, outline=grid.getPlayerList()[curentPlayer], width=2))
         image_container[i].append(canvas.create_image(xi,yi,image=case[0]))
-        rectangles[i].append(canvas.create_rectangle(
-            x0, y0, x1, y1, outline=grid.getPlayerList()[curentPlayer], width=2))
-
 
 for i, row in enumerate(grid.getGrid()):
     for j, cell in enumerate(row):
         canvas.itemconfig(
             rectangles[i][j], fill=cell.getPlayer().getColor())
-
 
 def placePawn(event):
     global curentPlayer
