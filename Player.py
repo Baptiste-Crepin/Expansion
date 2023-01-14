@@ -16,7 +16,6 @@ class Player():
         self.__color = value
 
     def __repr__(self) -> str:
-        print(self.getColor())
         return self.getColor()
 
     def setColorFromNumber(self) -> None:

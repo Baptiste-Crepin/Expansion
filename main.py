@@ -37,17 +37,6 @@ class Jeu():
             height = max
         return height
 
-    def validNumberOfPlayers(self, NumberOfPlayers, min=2, max=8) -> None:
-        if NumberOfPlayers < min:
-            print(
-                f"The minimal amount of player is {min}, the amount of player has been increased")
-            NumberOfPlayers = min
-        if NumberOfPlayers > max:
-            print(
-                f"The maximal amount of player is {max}, the amount of player has been decreased")
-            NumberOfPlayers = max
-        return NumberOfPlayers
-
     def validNumberOfBots(self, NumberOfBots, min=2, max=8) -> None:
         if NumberOfBots + self.getNumberOfPlayers() > max:
             print(
@@ -209,7 +198,7 @@ def intInput(message: str) -> int:
         return intInput("\nIncorect Value, please enter a number")
 
 
-def yesNoInput(message: str) -> int:
+def yesNoInput(message: str) -> bool:
     while True:
         inp = input("\n" + message + " : (y/n)  ").lower()
         if inp == "y":
@@ -218,25 +207,54 @@ def yesNoInput(message: str) -> int:
             return False
 
 
-def createGame():
-    Game = Jeu(intInput("How many columns ? between 3 and 12"),
-               intInput("How many rows ? between 3 and 10"))
+def validNumberOfPlayers(NumberOfPlayers, min=2, max=8) -> None:
+    if NumberOfPlayers < min:
+        print(
+            f"The minimal amount of player is {min}, the amount of player has been increased")
+        NumberOfPlayers = min
+    if NumberOfPlayers > max:
+        print(
+            f"The maximal amount of player is {max}, the amount of player has been decreased")
+        NumberOfPlayers = max
+    return NumberOfPlayers
 
-    if yesNoInput("Do you want to play against bots ?"):
-        Game.setNumberOfPlayers(
-            Game.validNumberOfPlayers(intInput("How many players ? minimum 1"), min=1))
-        Game.addbots(
-            intInput(f"you can add {8 - Game.getNumberOfPlayers()} Bots maximum, how many do you want to play against"))
-    else:
-        Game.setNumberOfPlayers(
-            Game.validNumberOfPlayers(intInput("How many players ? minimum 2"), min=2))
+
+def createGame(width: int, height: int, nbPlayer: int, bots: bool, nbBots: int):
+    Game = Jeu(width, height)
+
+    Game.setNumberOfPlayers(nbPlayer)
+
+    if bots:
+        Game.addbots(nbBots)
+
     Game.createPlayerList()
     Game.display()
     return Game
 
 
+def initializeGame():
+    width = intInput("How many columns ? between 3 and 12")
+    height = intInput("How many rows ? between 3 and 10")
+    bots = yesNoInput("Do you want to play against bots ?")
+
+    if bots:
+        nbPlayer = validNumberOfPlayers(
+            intInput("How many players ? minimum 1, maximum 7"),
+            min=1, max=7)
+
+        nbBots = intInput(
+            f"you can add {8 - nbPlayer} Bots maximum, how many do you want to play against")
+    else:
+        nbPlayer = validNumberOfPlayers(
+            intInput("How many players ? minimum 2"),
+            min=2)
+        nbBots = 0
+
+    return createGame(width, height, nbPlayer, bots, nbBots)
+
+
 def play():
-    Game = createGame()
+    Game = initializeGame()
 
     # play one time for all the players before checking and eliminating them
     for player in Game.getPlayerList():
