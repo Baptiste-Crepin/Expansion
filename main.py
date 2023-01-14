@@ -113,8 +113,8 @@ class Jeu():
     def inGrid(self, coord: tuple) -> bool:
         return not (coord[0] < 0 or
                     coord[1] < 0 or
-                    coord[0] >= self.getWidth() or
-                    coord[1] >= self.getHeight())
+                    coord[0] >= self.getHeight() or
+                    coord[1] >= self.getWidth())
 
     def getNeighbours(self, coord: tuple) -> list:
         neighbours = []
@@ -125,10 +125,10 @@ class Jeu():
         if coord[1]-1 >= 0:
             neighbours.append(self.getCell((coord[0], coord[1]-1)))
 
-        if coord[0]+1 < self.getWidth():
+        if coord[0]+1 < self.getHeight():
             neighbours.append(self.getCell((coord[0]+1, coord[1])))
 
-        if coord[1]+1 < self.getHeight():
+        if coord[1]+1 < self.getWidth():
             neighbours.append(self.getCell((coord[0], coord[1]+1)))
 
         return neighbours
@@ -137,6 +137,7 @@ class Jeu():
         return len(self.getNeighbours(coord))
 
     def getCell(self, coord: tuple) -> Case:
+        # print(coord, self.getGrid())
         return self.getGrid()[coord[0]][coord[1]]
 
     def placePawn(self, coord: tuple, player: Player) -> None:
@@ -169,7 +170,8 @@ class Jeu():
             return
 
         for neighbour in self.getNeighbours(coord):
-            self.expandPawn(neighbour.getCoordinates(), player)
+            if self.inGrid(neighbour.getCoordinates()):
+                self.expandPawn(neighbour.getCoordinates(), player)
 
     def playerInGrid(self, player):
         for row in self.getGrid():

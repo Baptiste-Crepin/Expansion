@@ -5,7 +5,7 @@ from tkinter import PhotoImage, ttk, messagebox
 
 class GraphicalInterfaces():
     def __init__(self):
-        self.grid = main.createGame(5, 5, 2, False)
+        self.grid = main.createGame(12, 10, 2, False)
         self.root = tk.Tk()
         self.canvas = tk.Canvas(self.root, width=self.grid.getWidth() *
                                 40, height=self.grid.getHeight()*40)
@@ -14,9 +14,9 @@ class GraphicalInterfaces():
         self.image_container = []
         self.curentPlayer = 0
         self.casePNG = [PhotoImage(file="./image/noHole.png"),
-                        PhotoImage(file="image/singleHole.png"),
-                        PhotoImage(file="image/twoHoles.png"),
-                        PhotoImage(file="image/threeHoles.png")]
+                        PhotoImage(file="./image/singleHole.png"),
+                        PhotoImage(file="./image/twoHoles.png"),
+                        PhotoImage(file="./image/threeHoles.png")]
 
         self.root.geometry('1500x750')
         self.root.title('Expansion')
@@ -74,7 +74,10 @@ class GraphicalInterfaces():
         # print(self.grid.getGrid())
         for i, row in enumerate(self.grid.getGrid()):
             for j, cell in enumerate(row):
-                score_case = cell.getPawnNumber()
+                if cell.getPawnNumber() < 4:
+                    score_case = cell.getPawnNumber()
+                else:
+                    score_case = 3
                 self.canvas.itemconfig(
                     self.image_container[i][j], image=self.casePNG[score_case])
 
@@ -121,7 +124,7 @@ class GraphicalInterfaces():
 
     def clear(self):
         for i, row in enumerate(self.grid.getGrid()):
-            for j in range(row):
+            for j, cell in enumerate(row):
                 self.canvas.delete(self.rectangles[i][j])
                 self.canvas.delete(self.image_container[i][j])
 
