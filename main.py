@@ -219,7 +219,7 @@ def validNumberOfPlayers(NumberOfPlayers, min=2, max=8) -> None:
     return NumberOfPlayers
 
 
-def createGame(width: int, height: int, nbPlayer: int, bots: bool, nbBots: int):
+def createGame(width: int, height: int, nbPlayer: int, bots: bool, nbBots: int = 0):
     Game = Jeu(width, height)
 
     Game.setNumberOfPlayers(nbPlayer)

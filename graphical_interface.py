@@ -3,199 +3,173 @@ import tkinter as tk
 from tkinter import PhotoImage, ttk, messagebox
 
 
-grid = main.createGame(5, 5, 2, False, 0)
+class GraphicalInterfaces():
+    def __init__(self):
+        self.grid = main.createGame(5, 5, 2, False)
+        self.root = tk.Tk()
+        self.canvas = tk.Canvas(self.root, width=self.grid.getWidth() *
+                                40, height=self.grid.getHeight()*40)
+        self.agreement = tk.StringVar()
+        self.rectangles = []
+        self.image_container = []
+        self.curentPlayer = 0
+        self.casePNG = [PhotoImage(file="./image/noHole.png"),
+                        PhotoImage(file="image/singleHole.png"),
+                        PhotoImage(file="image/twoHoles.png"),
+                        PhotoImage(file="image/threeHoles.png")]
 
-root = tk.Tk()
-root.geometry('1500x750')
-root.title('Expansion')
+        self.root.geometry('1500x750')
+        self.root.title('Expansion')
+        self.canvas.pack()
+        self.initializeCanvas()
 
-agreement = tk.StringVar()
+        self.spinbox1 = self.createSpinbox(True,
+                                           "Entre la longueur du plateau :", 3, 10)
+        self.spinbox2 = self.createSpinbox(True,
+                                           "Entrez la largeur du plateau :", 3, 12)
+        self.spinboxJ = self.createSpinbox(True,
+                                           "Nombres de joueurs :", 2, 8)
+        self.spinboxB = self.createSpinbox(False,
+                                           "Nombres de Bots :", 1, 7)
 
-casev = PhotoImage(file="image/casevide.png")
-unpion = PhotoImage(file="image/unpion.png")
-deuxpion = PhotoImage(file="image/deuxpion.png")
-troispion = PhotoImage(file="image/troispion.png")
-case = [casev, unpion, deuxpion, troispion]
+        self.canvas.bind('<Button-1>', self.placePawn)
+        btn = tk.Button(self.root, text="Nouveau Plateau",
+                        command=self.nvplateau)
+        btn.pack()
 
-canvas = tk.Canvas(root, width=grid.getWidth()*40, height=grid.getHeight()*40)
-canvas.pack()
+        ttk.Checkbutton(self.root,
+                        text='Voulez vous jouer avec des bots ?',
+                        command=self.botornot,
+                        variable=self.agreement,
+                        onvalue='Ajout de bots',
+                        offvalue='Retrait des bots'
+                        ).pack()
 
+    def initializeCanvas(self):
+        self.rectangles = []
+        self.image_container = []
+        self.curentPlayer = 0
+        for i in range(self.grid.getHeight()):
+            self.rectangles.append([])
+            self.image_container.append([])
 
-rectangles = []
-image_container = []
-curentPlayer = 0
+            for j in range(self.grid.getWidth()):
+                x0 = j * 40
+                y0 = i * 40
+                x1 = x0 + 40
+                y1 = y0 + 40
+                xi = (x1-x0)/2+x0
+                yi = (y1-y0)/2+y0
+                self.rectangles[i].append(self.canvas.create_rectangle(
+                    x0, y0, x1, y1, outline=self.grid.getPlayerList()[self.curentPlayer], width=2))
+                self.image_container[i].append(
+                    self.canvas.create_image(xi, yi, image=self.casePNG[0]))
 
+        for i, row in enumerate(self.grid.getGrid()):
+            for j, cell in enumerate(row):
+                self.canvas.itemconfig(
+                    self.rectangles[i][j], fill=cell.getPlayer().getColor())
 
-def initializeCanvas():
-    global rectangles
-    global image_container
-    global curentPlayer
-    rectangles = []
+    def update(self):
+        # print(self.grid.getGrid())
+        for i, row in enumerate(self.grid.getGrid()):
+            for j, cell in enumerate(row):
+                score_case = cell.getPawnNumber()
+                self.canvas.itemconfig(
+                    self.image_container[i][j], image=self.casePNG[score_case])
 
-    image_container = []
-    curentPlayer = 0
-    print(rectangles, image_container, curentPlayer)
+                if self.curentPlayer < len(self.grid.getPlayerList())-1:
+                    self.canvas.itemconfig(
+                        self.rectangles[i][j],
+                        outline=self.grid.getPlayerList()[self.curentPlayer+1],
+                        fill=cell.getPlayer().getColor()
+                    )
+                else:
+                    self.canvas.itemconfig(
+                        self.rectangles[i][j],
+                        outline=self.grid.getPlayerList()[0],
+                        fill=cell.getPlayer().getColor()
+                    )
 
-    for i in range(grid.getHeight()):
-        rectangles.append([])
-        image_container.append([])
+    def placePawn(self, event):
 
-        for j in range(grid.getWidth()):
-            x0 = j * 40
-            y0 = i * 40
-            x1 = x0 + 40
-            y1 = y0 + 40
-            xi = (x1-x0)/2+x0
-            yi = (y1-y0)/2+y0
-            rectangles[i].append(canvas.create_rectangle(
-                x0, y0, x1, y1, outline=grid.getPlayerList()[curentPlayer], width=2))
-            image_container[i].append(
-                canvas.create_image(xi, yi, image=case[0]))
+        x, y = event.x, event.y
+        selectedRow = y // 40
+        selectedCol = x // 40
 
-    for i, row in enumerate(grid.getGrid()):
-        for j, cell in enumerate(row):
-            canvas.itemconfig(
-                rectangles[i][j], fill=cell.getPlayer().getColor())
-
-
-def placePawn(event):
-    global curentPlayer
-
-    x, y = event.x, event.y
-    selectedRow = y // 40
-    selectedCol = x // 40
-
-    if grid.checkWin():
-        return
-
-    if isinstance(grid.getPlayerList()[curentPlayer], main.Bot):
-        coordo = grid.getPlayerList()[curentPlayer].pickCoordo(grid)
-        while grid.placePawn(coordo, grid.getPlayerList()[curentPlayer]) == False:
-            coordo = grid.getPlayerList()[curentPlayer].pickCoordo(grid)
-    else:
-        if grid.placePawn((selectedRow, selectedCol), grid.getPlayerList()[curentPlayer]) == False:
+        if self.grid.checkWin():
             return
-    grid.expandPawn((selectedRow, selectedCol),
-                    grid.getPlayerList()[curentPlayer])
 
-    update()
+        if isinstance(self.grid.getPlayerList()[self.curentPlayer], main.Bot):
+            coordo = self.grid.getPlayerList(
+            )[self.curentPlayer].pickCoordo(self.grid)
+            while self.grid.placePawn(coordo, self.grid.getPlayerList()[self.curentPlayer]) == False:
+                coordo = self.grid.getPlayerList(
+                )[self.curentPlayer].pickCoordo(self.grid)
+        else:
+            if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
+                return
+        self.grid.expandPawn((selectedRow, selectedCol),
+                             self.grid.getPlayerList()[self.curentPlayer])
 
-    if curentPlayer < len(grid.getPlayerList())-1:
-        curentPlayer += 1
-    else:
-        curentPlayer = 0
+        self.update()
 
+        if self.curentPlayer < len(self.grid.getPlayerList())-1:
+            self.curentPlayer += 1
+        else:
+            self.curentPlayer = 0
 
-def update():
-    # print(grid.getGrid())
-    for i, row in enumerate(grid.getGrid()):
-        for j, cell in enumerate(row):
-            score_case = cell.getPawnNumber()
-            canvas.itemconfig(image_container[i][j], image=case[score_case])
+    def clear(self):
+        for i, row in enumerate(self.grid.getGrid()):
+            for j in range(row):
+                self.canvas.delete(self.rectangles[i][j])
+                self.canvas.delete(self.image_container[i][j])
 
-            if curentPlayer < len(grid.getPlayerList())-1:
-                canvas.itemconfig(
-                    rectangles[i][j],
-                    outline=grid.getPlayerList()[curentPlayer+1],
-                    fill=cell.getPlayer().getColor()
-                )
-            else:
-                canvas.itemconfig(
-                    rectangles[i][j],
-                    outline=grid.getPlayerList()[0],
-                    fill=cell.getPlayer().getColor()
-                )
+    def nvplateau(self):
+        messagebox.showinfo("Mise à jour", "Mise à jour du plateau")
+        height = int(self.spinbox1.get())
+        width = int(self.spinbox2.get())
+        nbPlayer = int(self.spinboxJ.get())
+        nbBots = int(self.spinboxB.get())
+        self.clear()
+        # TODO: Change False if Bots is checked
+        self.grid = main.createGame(width, height, nbPlayer, False, nbBots)
+        self.initializeCanvas()
+        self.update()
 
+    def createSpinbox(self, state: bool, text: str, min: int, max: int):
+        label = tk.Label(self.root, text=text)
+        label.pack()
+        spinbox = tk.Spinbox(self.root, from_=min, to=max)
+        spinbox.pack()
+        if state:
+            spinbox.config(validate="key", validatecommand=(
+                spinbox.register(self.validation), "%P"))
+        else:
+            spinbox.config(state='disabled', validate="key", validatecommand=(
+                spinbox.register(self.validation), "%P"))
+        spinbox.bind("<Key>", self.ignore_input)
+        return spinbox
 
-def clear():
-    # print(grid.getGrid())
-    for i, row in enumerate(grid.getGrid()):
-        for j, cell in enumerate(row):
-            canvas.delete(rectangles[i][j])
-            canvas.delete(image_container[i][j])
+    def botornot(self):
+        tk.messagebox.showinfo(title='Result', message=self.agreement.get())
+        if self.agreement.get() == 'Ajout de bots':
+            self.spinboxB.config(state='normal')
+        else:
+            self.spinboxB.config(state='disabled')
 
+    def validation(self, new_text):
+        if new_text.isdigit():
+            return True
+        elif new_text == "":
+            return True
+        else:
+            return False
 
-def validation(new_text):
-    if new_text.isdigit():
-        return True
-    elif new_text == "":
-        return True
-    else:
-        return False
-
-
-def ignore_input(event):
-    return "break"
-
-
-initializeCanvas()
-
-label = tk.Label(root, text="Entre la longueur du plateau :")
-label.pack()
-spinbox1 = tk.Spinbox(root, from_=3, to=10)
-spinbox1.pack()
-spinbox1.config(validate="key", validatecommand=(
-    spinbox1.register(validation), "%P"))
-spinbox1.bind("<Key>", ignore_input)
-
-label = tk.Label(root, text="Entrez la largeur du plateau :")
-label.pack()
-spinbox2 = tk.Spinbox(root, from_=3, to=12)
-spinbox2.pack()
-spinbox2.config(validate="key", validatecommand=(
-    spinbox2.register(validation), "%P"))
-spinbox2.bind("<Key>", ignore_input)
-
-label = tk.Label(root, text="Nombres de joueurs :")
-label.pack()
-spinboxJ = tk.Spinbox(root, from_=2, to=8)
-spinboxJ.pack()
-spinboxJ.config(validate="key", validatecommand=(
-    spinboxJ.register(validation), "%P"))
-spinboxJ.bind("<Key>", ignore_input)
+    def ignore_input(self, event):
+        return "break"
 
 
-def botornot():
-    tk.messagebox.showinfo(title='Result', message=agreement.get())
-    if agreement.get() == 'Ajout de bots':
-        spinboxB.config(state='normal')
-    else:
-        spinboxB.config(state='disabled')
-
-
-ttk.Checkbutton(root,
-                text='Voulez vous jouer avec des bots ?',
-                command=botornot,
-                variable=agreement,
-                onvalue='Ajout de bots',
-                offvalue='Retrait des bots'
-                ).pack()
-
-label = tk.Label(root, text="Nombres de Bots :")
-label.pack()
-spinboxB = tk.Spinbox(root, from_=1, to=7)
-spinboxB.pack()
-spinboxB.config(state='disabled', validate="key",
-                validatecommand=(spinboxJ.register(validation), "%P"))
-spinboxB.bind("<Key>", ignore_input)
-
-
-def nvplateau():
-    messagebox.showinfo("Mise à jour", "Mise à jour du plateau")
-    height = int(spinbox1.get())
-    width = int(spinbox2.get())
-    clear()
-    global grid
-    grid = main.createGame(width, height, 2, False, 0)
-    initializeCanvas()
-    update()
-
-
-btn = tk.Button(root, text="Nouveau Plateau", command=nvplateau)
-btn.pack()
-
-
-canvas.bind('<Button-1>', placePawn)
-
-
-root.mainloop()
+if __name__ == "__main__":
+    GI = GraphicalInterfaces()
+    GI.root.mainloop()
