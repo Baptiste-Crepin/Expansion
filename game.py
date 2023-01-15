@@ -192,6 +192,44 @@ class Jeu():
             return True
         return False
 
+    def saveGame(self):
+        with open('./savefile.exp', 'w') as file:
+            # width: int, height: int, nbPlayer: int, bots: bool, nbBots: int = 0
+            file.write(str(self.getWidth())+"\n")
+            file.write(str(self.getHeight())+"\n")
+            file.write(str(self.getNumberOfPlayers())+"\n")
+            if self.getNumberOfBots() > 0:
+                file.write("True" + "\n")
+            else:
+                file.write("False" + "\n")
+            file.write(str(self.getNumberOfBots())+"\n")
+            for row in self.getGrid():
+                for cell in row:
+                    file.write(str(cell)+"\n")
+
+    def loadGame(self):
+        with open('./savefile.exp', 'r') as file:
+            # width: int, height: int, nbPlayer: int, bots: bool, nbBots: int = 0
+            lines = file.readlines()
+            # Get the second line
+            width = int(lines[0])
+            height = int(lines[1])
+            nbPlayer = int(lines[2])
+            bots = bool(lines[3])
+            nbBots = int(lines[4])
+            createGame(width, height, nbPlayer, bots, nbBots)
+
+            grid = []
+            for x in range(width):
+                row = []
+                for y in range(height):
+                    cell = lines[x*width + y + 5]
+                    pawnNumber = int(cell[1])
+                    player = int(cell[4])
+                    row.append(Case(pawnNumber, (x, y), Player(player)))
+                grid.append(row)
+            self.setGrid(grid)
+
 
 def intInput(message: str) -> int:
     try:
@@ -230,7 +268,6 @@ def createGame(width: int, height: int, nbPlayer: int, bots: bool, nbBots: int =
         Game.addbots(nbBots)
 
     Game.createPlayerList()
-    Game.display()
     return Game
 
 
@@ -243,7 +280,6 @@ def initializeGame():
         nbPlayer = validNumberOfPlayers(
             intInput("How many players ? minimum 1, maximum 7"),
             min=1, max=7)
-
         nbBots = intInput(
             f"you can add {8 - nbPlayer} Bots maximum, how many do you want to play against")
     else:
@@ -257,6 +293,7 @@ def initializeGame():
 
 def play():
     Game = initializeGame()
+    Game.display()
 
     # play one time for all the players before checking and eliminating them
     for player in Game.getPlayerList():
@@ -272,6 +309,9 @@ def play():
 
         Game.expandPawn(coordo, player)
         Game.display()
+        # if you wish to save the game on every move you can decoment those lines
+        # Game.saveGame()
+        # Game.loadGame()
 
     # game loop until game is over
     while not Game.checkWin():

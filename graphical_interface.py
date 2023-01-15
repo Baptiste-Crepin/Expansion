@@ -1,11 +1,11 @@
-import main as main
+import game as game
 import tkinter as tk
 from tkinter import PhotoImage, ttk, messagebox
 
 
 class GraphicalInterfaces():
     def __init__(self):
-        self.grid = main.createGame(12, 10, 2, False)
+        self.grid = game.createGame(12, 10, 2, False)
         self.root = tk.Tk()
         self.canvas = tk.Canvas(self.root, width=self.grid.getWidth() *
                                 40, height=self.grid.getHeight()*40)
@@ -103,7 +103,7 @@ class GraphicalInterfaces():
         if self.grid.checkWin():
             return
 
-        if isinstance(self.grid.getPlayerList()[self.curentPlayer], main.Bot):
+        if isinstance(self.grid.getPlayerList()[self.curentPlayer], game.Bot):
             coordo = self.grid.getPlayerList(
             )[self.curentPlayer].pickCoordo(self.grid)
             while self.grid.placePawn(coordo, self.grid.getPlayerList()[self.curentPlayer]) == False:
@@ -133,10 +133,11 @@ class GraphicalInterfaces():
         height = int(self.spinbox1.get())
         width = int(self.spinbox2.get())
         nbPlayer = int(self.spinboxJ.get())
+        bots = self.botornot()
         nbBots = int(self.spinboxB.get())
+
         self.clear()
-        # TODO: Change False if Bots is checked
-        self.grid = main.createGame(width, height, nbPlayer, False, nbBots)
+        self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.update()
 
@@ -158,8 +159,10 @@ class GraphicalInterfaces():
         tk.messagebox.showinfo(title='Result', message=self.agreement.get())
         if self.agreement.get() == 'Ajout de bots':
             self.spinboxB.config(state='normal')
+            return True
         else:
             self.spinboxB.config(state='disabled')
+            return False
 
     def validation(self, new_text):
         if new_text.isdigit():
