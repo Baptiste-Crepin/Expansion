@@ -81,7 +81,7 @@ class Jeu():
         self.__PlayerList = value
 
     def createGrid(self) -> list:
-        return [[Case(0, (x, y), Player(0)) for x in range(self.getWidth())]
+        return [[Case(0, (y, x), Player(0)) for x in range(self.getWidth())]
                 for y in range(self.getHeight())]
 
     def addbots(self, value: int) -> None:
@@ -226,7 +226,7 @@ class Jeu():
                     cell = lines[x*width + y + 5]
                     pawnNumber = int(cell[1])
                     player = int(cell[4])
-                    row.append(Case(pawnNumber, (x, y), Player(player)))
+                    row.append(Case(pawnNumber, (y, x), Player(player)))
                 grid.append(row)
             self.setGrid(grid)
 
