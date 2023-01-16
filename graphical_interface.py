@@ -101,8 +101,8 @@ class GraphicalInterfaces():
     #         messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
     #         self.root.destroy()
 
-
     def placePawn(self, event):
+        print("\n"*20, self.curentPlayer, self.grid.getPlayerList())
 
         x, y = event.x, event.y
         selectedRow = y // 40
@@ -121,7 +121,7 @@ class GraphicalInterfaces():
             if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
                 return
         self.grid.expandPawn((selectedRow, selectedCol),
-                            self.grid.getPlayerList()[self.curentPlayer])
+                             self.grid.getPlayerList()[self.curentPlayer])
 
         self.update()
 
@@ -133,7 +133,7 @@ class GraphicalInterfaces():
         if self.grid.checkWin():
             winner = self.grid.getPlayerList()[0].getNumber()
             messagebox.showinfo("Winner", f"The winner is {winner}")
-        
+
         # self.check_victory()
 
     def clear(self):
@@ -154,8 +154,6 @@ class GraphicalInterfaces():
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.update()
-
-
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
@@ -192,12 +190,20 @@ class GraphicalInterfaces():
         return "break"
 
     def savebutton(self):
-        save_button = tk.Button(self.root, text="Save game", command=self.grid.saveGame)
+        save_button = tk.Button(
+            self.root, text="Save game", command=self.grid.saveGame)
         save_button.pack()
 
     def loadbutton(self):
-        load_button = tk.Button(self.root, text="Load game", command=self.grid.loadGame)
+        load_button = tk.Button(
+            self.root, text="Load game", command=self.loadGame)
         load_button.pack()
+
+    def loadGame(self):
+        self.grid.loadGame()
+        self.update()
+
+
 if __name__ == "__main__":
     GI = GraphicalInterfaces()
     GI.root.mainloop()

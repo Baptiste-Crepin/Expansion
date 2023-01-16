@@ -146,7 +146,8 @@ class Jeu():
 
         cell = self.getCell(coord)
 
-        if cell.getPlayer().getNumber() != 0 and cell.getPlayer() != player:
+        if cell.getPlayer().getNumber() != 0 and cell.getPlayer().getNumber() != player.getNumber():
+            print(cell.getPlayer(), player)
             return False
 
         cell.setPawnNumber(cell.getPawnNumber() + 1)
@@ -225,13 +226,13 @@ class Jeu():
             createGame(width, height, nbPlayer, bots, nbBots)
 
             grid = []
-            for x in range(width):
+            for y in range(height):
                 row = []
-                for y in range(height):
-                    cell = lines[x*width + y + 5]
+                for x in range(width):
+                    cell = lines[y*width + x + 5]
                     pawnNumber = int(cell[1])
                     player = int(cell[4])
-                    row.append(Case(pawnNumber, (x, y), Player(player)))
+                    row.append(Case(pawnNumber, (y, x), Player(player)))
                 grid.append(row)
             self.setGrid(grid)
 
