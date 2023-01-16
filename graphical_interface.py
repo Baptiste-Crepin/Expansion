@@ -12,7 +12,6 @@ class GraphicalInterfaces():
         self.agreement = tk.StringVar()
         self.rectangles = []
         self.image_container = []
-        self.curentPlayer = 0
         self.casePNG = [PhotoImage(file="image/noHole.png"),
                         PhotoImage(file="image/singleHole.png"),
                         PhotoImage(file="image/twoHoles.png"),
@@ -50,8 +49,6 @@ class GraphicalInterfaces():
     def initializeCanvas(self):
         self.rectangles = []
         self.image_container = []
-        self.curentPlayer = 0
-        print(self.grid.getHeight(), self.grid.getWidth())
         for i in range(self.grid.getHeight()):
             self.rectangles.append([])
             self.image_container.append([])
@@ -64,7 +61,7 @@ class GraphicalInterfaces():
                 xi = (x1-x0)/2+x0
                 yi = (y1-y0)/2+y0
                 self.rectangles[i].append(self.canvas.create_rectangle(
-                    x0, y0, x1, y1, outline=self.grid.getPlayerList()[self.curentPlayer], width=2))
+                    x0, y0, x1, y1, outline=self.grid.getCurrentPlayer(), width=2))
                 self.image_container[i].append(
                     self.canvas.create_image(xi, yi, image=self.casePNG[0]))
 
@@ -74,7 +71,6 @@ class GraphicalInterfaces():
                     self.rectangles[i][j], fill=cell.getPlayer().getColor())
 
     def update(self):
-        # print(self.grid.getGrid())
         for i, row in enumerate(self.grid.getGrid()):
             for j, cell in enumerate(row):
                 if cell.getPawnNumber() < 4:
@@ -84,18 +80,11 @@ class GraphicalInterfaces():
                 self.canvas.itemconfig(
                     self.image_container[i][j], image=self.casePNG[score_case])
 
-                if self.curentPlayer < len(self.grid.getPlayerList())-1:
-                    self.canvas.itemconfig(
-                        self.rectangles[i][j],
-                        outline=self.grid.getPlayerList()[self.curentPlayer+1],
-                        fill=cell.getPlayer().getColor()
-                    )
-                else:
-                    self.canvas.itemconfig(
-                        self.rectangles[i][j],
-                        outline=self.grid.getPlayerList()[0],
-                        fill=cell.getPlayer().getColor()
-                    )
+                self.canvas.itemconfig(
+                    self.rectangles[i][j],
+                    outline=self.grid.getNextPlayer(),
+                    fill=cell.getPlayer().getColor()
+                )
 
     # def check_victory(self):
     #     if len(self.grid.getPlayerList()) == 1:
@@ -103,7 +92,6 @@ class GraphicalInterfaces():
     #         self.root.destroy()
 
     def placePawn(self, event):
-        print("\n"*20, self.curentPlayer, self.grid.getPlayerList())
 
         x, y = event.x, event.y
         selectedRow = y // 40
@@ -112,24 +100,19 @@ class GraphicalInterfaces():
         if self.grid.checkWin():
             return
 
-        if isinstance(self.grid.getPlayerList()[self.curentPlayer], game.Bot):
-            coordo = self.grid.getPlayerList(
-            )[self.curentPlayer].pickCoordo(self.grid)
-            while self.grid.placePawn(coordo, self.grid.getPlayerList()[self.curentPlayer]) == False:
-                coordo = self.grid.getPlayerList(
-                )[self.curentPlayer].pickCoordo(self.grid)
+        if isinstance(self.grid.getCurrentPlayer(), game.Bot):
+            coordo = self.grid.getCurrentPlayer().pickCoordo(self.grid)
+            while self.grid.placePawn(coordo, self.grid.getCurrentPlayer()) == False:
+                coordo = self.grid.getCurrentPlayer().pickCoordo(self.grid)
         else:
-            if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
+            if self.grid.placePawn((selectedRow, selectedCol), self.grid.getCurrentPlayer()) == False:
                 return
         self.grid.expandPawn((selectedRow, selectedCol),
-                             self.grid.getPlayerList()[self.curentPlayer])
+                             self.grid.getCurrentPlayer())
 
+        # self.grid.display()
         self.update()
-
-        if self.curentPlayer < len(self.grid.getPlayerList())-1:
-            self.curentPlayer += 1
-        else:
-            self.curentPlayer = 0
+        self.grid.NextPlayer()
 
         if self.grid.checkWin():
             winner = self.grid.getPlayerList()[0].getNumber()

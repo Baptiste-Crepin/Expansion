@@ -11,6 +11,10 @@ class Jeu():
         self.__NumberOfPlayers = 0
         self.__NumberOfBots = 0
         self.__PlayerList = []
+        self.__currentPlayerN = 0
+        self.__nextPlayerN = 1
+        self.__currentPlayer = None
+        self.__nextPlayer = None
 
         while not self.engoughSpaceForPlayer():
             self.expandBoard(self.getWidth()+1, self.getHeight()+1)
@@ -62,6 +66,18 @@ class Jeu():
     def getPlayerList(self) -> int:
         return self.__PlayerList
 
+    def getCurrentPlayer(self) -> Player:
+        return self.__currentPlayer
+
+    def getNextPlayer(self) -> Player:
+        return self.__nextPlayer
+
+    def getCurrentPlayerN(self) -> int:
+        return self.__currentPlayerN
+
+    def getNextPlayerN(self) -> int:
+        return self.__nextPlayerN
+
     def setWidth(self, value: int) -> None:
         self.__width = value
 
@@ -79,6 +95,18 @@ class Jeu():
 
     def setPlayerList(self, value: list) -> None:
         self.__PlayerList = value
+
+    def setCurrentPlayer(self, value: Player) -> None:
+        self.__currentPlayer = value
+
+    def setNextPlayer(self, value: Player) -> None:
+        self.__nextPlayer = value
+
+    def setCurrentPlayerN(self, value: int) -> None:
+        self.__currentPlayerN = value
+
+    def setNextPlayerN(self, value: int) -> None:
+        self.__nextPlayerN = value
 
     def createGrid(self) -> list:
         return [[Case(0, (y, x), Player(0)) for x in range(self.getWidth())]
@@ -188,6 +216,20 @@ class Jeu():
                 print("LOST", player.getNumber())
                 self.getPlayerList().remove(player)
 
+    def NextPlayer(self) -> None:
+        if self.getCurrentPlayerN() < len(self.getPlayerList())-1:
+            self.setCurrentPlayerN(self.getCurrentPlayerN() + 1)
+        else:
+            self.setCurrentPlayerN(0)
+
+        if self.getNextPlayerN() < len(self.getPlayerList())-1:
+            self.setNextPlayerN(self.getNextPlayerN() + 1)
+        else:
+            self.setNextPlayerN(0)
+
+        self.setCurrentPlayer(self.getPlayerList()[self.getCurrentPlayerN()])
+        self.setNextPlayer(self.getPlayerList()[self.getNextPlayerN()])
+
     def checkWin(self):
         winner = None
         if len(self.__PlayerList) == 1:
@@ -276,6 +318,8 @@ def createGame(width: int, height: int, nbPlayer: int, bots: bool, nbBots: int =
         Game.addbots(nbBots)
 
     Game.createPlayerList()
+    Game.setCurrentPlayer(Game.getPlayerList()[0])
+    Game.setNextPlayer(Game.getPlayerList()[1])
     return Game
 
 
@@ -304,7 +348,8 @@ def play():
     Game.display()
 
     # play one time for all the players before checking and eliminating them
-    for player in Game.getPlayerList():
+    for a in Game.getPlayerList():
+        player = Game.getCurrentPlayer()
         print(player.getNumber())
         if isinstance(player, Bot):
             coordo = player.pickCoordo(Game)
@@ -317,26 +362,28 @@ def play():
 
         Game.expandPawn(coordo, player)
         Game.display()
+        Game.NextPlayer()
         # if you wish to save the game on every move you can decoment those lines
         # Game.saveGame()
         # Game.loadGame()
 
     # game loop until game is over
     while not Game.checkWin():
-        for player in Game.getPlayerList():
-            print(player.getNumber())
-            if isinstance(player, Bot):
+        player = Game.getCurrentPlayer()
+        print(player.getNumber())
+        if isinstance(player, Bot):
+            coordo = player.pickCoordo(Game)
+            while Game.placePawn(coordo, player) == False:
                 coordo = player.pickCoordo(Game)
-                while Game.placePawn(coordo, player) == False:
-                    coordo = player.pickCoordo(Game)
-            else:
+        else:
+            coordo = (intInput("row")-1, intInput("Col")-1)
+            while Game.placePawn(coordo, player) == False:
                 coordo = (intInput("row")-1, intInput("Col")-1)
-                while Game.placePawn(coordo, player) == False:
-                    coordo = (intInput("row")-1, intInput("Col")-1)
 
-            Game.expandPawn(coordo, player)
-            Game.display()
-            Game.updatePlayers()
+        Game.expandPawn(coordo, player)
+        Game.display()
+        Game.updatePlayers()
+        Game.NextPlayer()
 
     print(
         f'The game has ended and Player {Game.getPlayerList()[0].getNumber()} Won')
