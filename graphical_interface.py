@@ -94,11 +94,16 @@ class GraphicalInterfaces():
                         fill=cell.getPlayer().getColor()
                     )
 
-    # def check_victory(self):
-    #     if len(self.grid.getPlayerList()) == 1:
-    #         messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
-    #         self.root.destroy()
+    def clear(self):
+        for i, row in enumerate(self.grid.getGrid()):
+            for j, cell in enumerate(row):
+                self.canvas.delete(self.rectangles[i][j])
+                self.canvas.delete(self.image_container[i][j])
 
+    def displayWinner(self):
+        if self.grid.checkWin():
+            winner = self.grid.winner().getNumber()
+            messagebox.showinfo("Winner", f"The winner is {winner}")
 
     def placePawn(self, event):
 
@@ -119,7 +124,7 @@ class GraphicalInterfaces():
             if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
                 return
         self.grid.expandPawn((selectedRow, selectedCol),
-                            self.grid.getPlayerList()[self.curentPlayer])
+                             self.grid.getPlayerList()[self.curentPlayer])
 
         self.update()
 
@@ -127,14 +132,8 @@ class GraphicalInterfaces():
             self.curentPlayer += 1
         else:
             self.curentPlayer = 0
-        
-        # self.check_victory()
 
-    def clear(self):
-        for i, row in enumerate(self.grid.getGrid()):
-            for j, cell in enumerate(row):
-                self.canvas.delete(self.rectangles[i][j])
-                self.canvas.delete(self.image_container[i][j])
+        self.displayWinner()
 
     def nvplateau(self):
         messagebox.showinfo("Board update", "The board has been updated")
@@ -148,11 +147,6 @@ class GraphicalInterfaces():
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.update()
-
-        winner = game.getPlayerList()[0].getNumber()
-        if winner:
-            messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
-
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
