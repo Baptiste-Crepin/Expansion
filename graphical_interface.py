@@ -13,10 +13,10 @@ class GraphicalInterfaces():
         self.rectangles = []
         self.image_container = []
         self.curentPlayer = 0
-        self.casePNG = [PhotoImage(file="./image/noHole.png"),
-                        PhotoImage(file="./image/singleHole.png"),
-                        PhotoImage(file="./image/twoHoles.png"),
-                        PhotoImage(file="./image/threeHoles.png")]
+        self.casePNG = [PhotoImage(file="image/noHole.png"),
+                        PhotoImage(file="image/singleHole.png"),
+                        PhotoImage(file="image/twoHoles.png"),
+                        PhotoImage(file="image/threeHoles.png")]
 
         self.root.geometry('1500x750')
         self.root.title('Expansion')
@@ -24,25 +24,25 @@ class GraphicalInterfaces():
         self.initializeCanvas()
 
         self.spinbox1 = self.createSpinbox(True,
-                                           "Entre la longueur du plateau :", 3, 10)
+                                           "Enter the height of the board :", 3, 10)
         self.spinbox2 = self.createSpinbox(True,
-                                           "Entrez la largeur du plateau :", 3, 12)
+                                           "Enter the width of the board :", 3, 12)
         self.spinboxJ = self.createSpinbox(True,
-                                           "Nombres de joueurs :", 2, 8)
+                                           "Number of player :", 2, 8)
         self.spinboxB = self.createSpinbox(False,
-                                           "Nombres de Bots :", 1, 7)
+                                           "Number of bots :", 1, 7)
 
         self.canvas.bind('<Button-1>', self.placePawn)
-        btn = tk.Button(self.root, text="Nouveau Plateau",
+        btn = tk.Button(self.root, text="New board",
                         command=self.nvplateau)
         btn.pack()
 
         ttk.Checkbutton(self.root,
-                        text='Voulez vous jouer avec des bots ?',
+                        text='Do you want bots ?',
                         command=self.botornot,
                         variable=self.agreement,
-                        onvalue='Ajout de bots',
-                        offvalue='Retrait des bots'
+                        onvalue='Bot added',
+                        offvalue='Bot removed'
                         ).pack()
 
     def initializeCanvas(self):
@@ -94,6 +94,12 @@ class GraphicalInterfaces():
                         fill=cell.getPlayer().getColor()
                     )
 
+    # def check_victory(self):
+    #     if len(self.grid.getPlayerList()) == 1:
+    #         messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
+    #         self.root.destroy()
+
+
     def placePawn(self, event):
 
         x, y = event.x, event.y
@@ -113,7 +119,7 @@ class GraphicalInterfaces():
             if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
                 return
         self.grid.expandPawn((selectedRow, selectedCol),
-                             self.grid.getPlayerList()[self.curentPlayer])
+                            self.grid.getPlayerList()[self.curentPlayer])
 
         self.update()
 
@@ -121,6 +127,8 @@ class GraphicalInterfaces():
             self.curentPlayer += 1
         else:
             self.curentPlayer = 0
+        
+        # self.check_victory()
 
     def clear(self):
         for i, row in enumerate(self.grid.getGrid()):
@@ -129,7 +137,7 @@ class GraphicalInterfaces():
                 self.canvas.delete(self.image_container[i][j])
 
     def nvplateau(self):
-        messagebox.showinfo("Mise à jour", "Mise à jour du plateau")
+        messagebox.showinfo("Board update", "The board has been updated")
         height = int(self.spinbox1.get())
         width = int(self.spinbox2.get())
         nbPlayer = int(self.spinboxJ.get())
@@ -140,6 +148,11 @@ class GraphicalInterfaces():
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.update()
+
+        winner = game.getPlayerList()[0].getNumber()
+        if winner:
+            messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
+
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
@@ -157,7 +170,7 @@ class GraphicalInterfaces():
 
     def botornot(self):
         tk.messagebox.showinfo(title='Result', message=self.agreement.get())
-        if self.agreement.get() == 'Ajout de bots':
+        if self.agreement.get() == 'Addings bots':
             self.spinboxB.config(state='normal')
             return True
         else:
