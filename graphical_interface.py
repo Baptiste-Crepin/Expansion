@@ -51,6 +51,7 @@ class GraphicalInterfaces():
         self.rectangles = []
         self.image_container = []
         self.curentPlayer = 0
+        print(self.grid.getHeight(), self.grid.getWidth())
         for i in range(self.grid.getHeight()):
             self.rectangles.append([])
             self.image_container.append([])
@@ -191,7 +192,7 @@ class GraphicalInterfaces():
 
     def savebutton(self):
         save_button = tk.Button(
-            self.root, text="Save game", command=self.grid.saveGame)
+            self.root, text="Save game", command=self.saveGame)
         save_button.pack()
 
     def loadbutton(self):
@@ -199,8 +200,14 @@ class GraphicalInterfaces():
             self.root, text="Load game", command=self.loadGame)
         load_button.pack()
 
+    def saveGame(self):
+        self.grid.saveGame()
+        self.grid.display()
+
     def loadGame(self):
         self.grid.loadGame()
+        self.grid.display()
+        self.initializeCanvas()
         self.update()
 
 
