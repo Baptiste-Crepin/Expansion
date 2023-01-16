@@ -81,7 +81,7 @@ class Jeu():
         self.__PlayerList = value
 
     def createGrid(self) -> list:
-        return [[Case(0, (y, x), Player(0)) for x in range(self.getWidth())]
+        return [[Case(0, (x, y), Player(0)) for x in range(self.getWidth())]
                 for y in range(self.getHeight())]
 
     def addbots(self, value: int) -> None:
@@ -188,13 +188,14 @@ class Jeu():
                 self.getPlayerList().remove(player)
 
     def checkWin(self):
-        if len(self.getPlayerList()) == 1:
-            return True
-        return False
-
-    def winner(self):
-        if self.checkWin():
-            return self.getPlayerList()[0]
+        winner = None
+        if len(self.__PlayerList) == 1:
+            winner = self.__PlayerList[0]
+        for player in self.__PlayerList:
+            if all(case.getPlayer() == player for row in self.__grid for case in row):
+                winner = player
+                break
+        return winner
 
     def saveGame(self):
         with open('./savefile.exp', 'w') as file:
@@ -230,7 +231,7 @@ class Jeu():
                     cell = lines[x*width + y + 5]
                     pawnNumber = int(cell[1])
                     player = int(cell[4])
-                    row.append(Case(pawnNumber, (y, x), Player(player)))
+                    row.append(Case(pawnNumber, (x, y), Player(player)))
                 grid.append(row)
             self.setGrid(grid)
 
@@ -335,7 +336,7 @@ def play():
             Game.updatePlayers()
 
     print(
-        f'The game has ended and Player {Game.winner().getNumber()} Won')
+        f'The game has ended and Player {Game.getPlayerList()[0].getNumber()} Won')
 
 
 if __name__ == "__main__":

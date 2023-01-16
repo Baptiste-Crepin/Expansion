@@ -31,6 +31,8 @@ class GraphicalInterfaces():
                                            "Number of player :", 2, 8)
         self.spinboxB = self.createSpinbox(False,
                                            "Number of bots :", 1, 7)
+        self.savebutton()
+        self.loadbutton()
 
         self.canvas.bind('<Button-1>', self.placePawn)
         btn = tk.Button(self.root, text="New board",
@@ -94,16 +96,11 @@ class GraphicalInterfaces():
                         fill=cell.getPlayer().getColor()
                     )
 
-    def clear(self):
-        for i, row in enumerate(self.grid.getGrid()):
-            for j, cell in enumerate(row):
-                self.canvas.delete(self.rectangles[i][j])
-                self.canvas.delete(self.image_container[i][j])
+    # def check_victory(self):
+    #     if len(self.grid.getPlayerList()) == 1:
+    #         messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
+    #         self.root.destroy()
 
-    def displayWinner(self):
-        if self.grid.checkWin():
-            winner = self.grid.winner().getNumber()
-            messagebox.showinfo("Winner", f"The winner is {winner}")
 
     def placePawn(self, event):
 
@@ -124,7 +121,7 @@ class GraphicalInterfaces():
             if self.grid.placePawn((selectedRow, selectedCol), self.grid.getPlayerList()[self.curentPlayer]) == False:
                 return
         self.grid.expandPawn((selectedRow, selectedCol),
-                             self.grid.getPlayerList()[self.curentPlayer])
+                            self.grid.getPlayerList()[self.curentPlayer])
 
         self.update()
 
@@ -133,7 +130,17 @@ class GraphicalInterfaces():
         else:
             self.curentPlayer = 0
 
-        self.displayWinner()
+        if self.grid.checkWin():
+            winner = self.grid.getPlayerList()[0].getNumber()
+            messagebox.showinfo("Winner", f"The winner is {winner}")
+        
+        # self.check_victory()
+
+    def clear(self):
+        for i, row in enumerate(self.grid.getGrid()):
+            for j, cell in enumerate(row):
+                self.canvas.delete(self.rectangles[i][j])
+                self.canvas.delete(self.image_container[i][j])
 
     def nvplateau(self):
         messagebox.showinfo("Board update", "The board has been updated")
@@ -147,6 +154,8 @@ class GraphicalInterfaces():
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.update()
+
+
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
@@ -182,7 +191,13 @@ class GraphicalInterfaces():
     def ignore_input(self, event):
         return "break"
 
+    def savebutton(self):
+        save_button = tk.Button(self.root, text="Save game", command=self.grid.saveGame)
+        save_button.pack()
 
+    def loadbutton(self):
+        load_button = tk.Button(self.root, text="Load game", command=self.grid.loadGame)
+        load_button.pack()
 if __name__ == "__main__":
     GI = GraphicalInterfaces()
     GI.root.mainloop()
