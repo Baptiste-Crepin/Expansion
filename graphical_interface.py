@@ -2,7 +2,6 @@ import game as game
 import tkinter as tk
 from tkinter import PhotoImage, ttk, messagebox
 
-
 class GraphicalInterfaces():
     def __init__(self):
         self.grid = game.createGame(12, 10, 2, False)
@@ -86,11 +85,6 @@ class GraphicalInterfaces():
                     fill=cell.getPlayer().getColor()
                 )
 
-    # def check_victory(self):
-    #     if len(self.grid.getPlayerList()) == 1:
-    #         messagebox.showinfo("Winner", f"The winner is {winner.getName()}")
-    #         self.root.destroy()
-
     def placePawn(self, event):
 
         x, y = event.x, event.y
@@ -118,8 +112,6 @@ class GraphicalInterfaces():
             winner = self.grid.getPlayerList()[0].getNumber()
             messagebox.showinfo("Winner", f"The winner is {winner}")
 
-        # self.check_victory()
-
     def clear(self):
         for i, row in enumerate(self.grid.getGrid()):
             for j, cell in enumerate(row):
@@ -137,7 +129,10 @@ class GraphicalInterfaces():
         self.clear()
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
+        self.canvas.configure(width=self.grid.getWidth()*40, height=self.grid.getHeight()*40)
+        self.canvas.pack()
         self.update()
+        
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
