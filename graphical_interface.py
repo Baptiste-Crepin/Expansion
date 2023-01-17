@@ -34,7 +34,7 @@ class GraphicalInterfaces():
         self.loadbutton()
 
         self.canvas.bind('<Button-1>', self.placePawn)
-        btn = tk.Button(self.root, text="New board",font=("Arial",15),
+        btn = tk.Button(self.root, text="New board", font=("Arial", 15),
                         command=self.nvplateau)
         btn.pack()
 
@@ -83,9 +83,11 @@ class GraphicalInterfaces():
                 self.canvas.itemconfig(
                     self.image_container[i][j], image=self.casePNG[score_case])
 
+                print("\n"*10, self.grid.getCurrentPlayer(),
+                      self.grid.getNextPlayer())
                 self.canvas.itemconfig(
                     self.rectangles[i][j],
-                    outline=self.grid.getNextPlayer(),
+                    outline=self.grid.getNextPlayer().getColor(),
                     fill=cell.getPlayer().getColor()
                 )
 
@@ -143,7 +145,7 @@ class GraphicalInterfaces():
         label = tk.Label(self.root, text=text)
         label.config(font="Arial")
         label.pack()
-        spinbox = tk.Spinbox(self.root, from_=min, to=max) 
+        spinbox = tk.Spinbox(self.root, from_=min, to=max)
         spinbox.pack()
         if state:
             spinbox.config(validate="key", validatecommand=(
@@ -177,13 +179,13 @@ class GraphicalInterfaces():
     def savebutton(self):
         save_button = tk.Button(
             self.root, text="Save game", command=self.saveGame)
-        save_button.config(font=("Arial",15))
+        save_button.config(font=("Arial", 15))
         save_button.pack()
 
     def loadbutton(self):
         load_button = tk.Button(
             self.root, text="Load game", command=self.loadGame)
-        load_button.config(font=("Arial",15))
+        load_button.config(font=("Arial", 15))
         load_button.pack()
 
     def saveGame(self):
