@@ -251,6 +251,7 @@ class Jeu():
             else:
                 file.write("False" + "\n")
             file.write(str(self.getNumberOfBots())+"\n")
+            file.write(str(self.getCurrentPlayerN())+"\n")
             for row in self.getGrid():
                 for cell in row:
                     file.write(str(cell)+"\n")
@@ -265,20 +266,24 @@ class Jeu():
             nbPlayer = int(lines[2])
             bots = bool(lines[3])
             nbBots = int(lines[4])
+            currentPlayerN = int(lines[5])
             createGame(width, height, nbPlayer, bots, nbBots)
 
             grid = []
             for y in range(height):
                 row = []
                 for x in range(width):
-                    cell = lines[y*width + x + 5]
+                    cell = lines[y*width + x + 6]
                     pawnNumber = int(cell[1])
                     player = int(cell[4])
                     row.append(Case(pawnNumber, (y, x), Player(player)))
                 grid.append(row)
+
             self.setGrid(grid)
             self.setWidth(width)
             self.setHeight(height)
+            self.setCurrentPlayerN(currentPlayerN)
+            self.setCurrentPlayer(self.getPlayerList()[currentPlayerN])
 
 
 def intInput(message: str) -> int:

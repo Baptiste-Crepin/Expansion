@@ -2,6 +2,7 @@ import game as game
 import tkinter as tk
 from tkinter import PhotoImage, ttk, messagebox
 
+
 class GraphicalInterfaces():
     def __init__(self):
         self.grid = game.createGame(12, 10, 2, False)
@@ -129,11 +130,11 @@ class GraphicalInterfaces():
         self.clear()
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
-        self.canvas.configure(width=self.grid.getWidth()*40, height=self.grid.getHeight()*40)
-        self.canvas.configure(outline=self.grid.getCurrentPlayer())
+        self.canvas.configure(width=self.grid.getWidth()
+                              * 40, height=self.grid.getHeight()*40)
+        self.canvas.configure(outline=self.grid.getCurrentPlayer().getColor())
         self.canvas.pack()
         self.update()
-        
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
@@ -181,11 +182,11 @@ class GraphicalInterfaces():
 
     def saveGame(self):
         self.grid.saveGame()
-        self.grid.display()
+        # self.grid.display()
 
     def loadGame(self):
         self.grid.loadGame()
-        self.grid.display()
+        # self.grid.display()
         self.initializeCanvas()
         self.update()
 
