@@ -130,6 +130,7 @@ class GraphicalInterfaces():
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
         self.canvas.configure(width=self.grid.getWidth()*40, height=self.grid.getHeight()*40)
+        self.canvas.configure(outline=self.grid.getCurrentPlayer())
         self.canvas.pack()
         self.update()
         

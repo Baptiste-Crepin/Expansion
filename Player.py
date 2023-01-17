@@ -20,14 +20,14 @@ class Player():
 
     def setColorFromNumber(self) -> None:
         BLACK = "#FFFFFF"
-        RED = "#c3463d"
+        RED = "#fe001c"
         ORANGE = "#d26f34"
         YELLOW = "#efe743"
         GREEN = "#639d39"
         BLUE = "#1a6baa"
-        PURPLE = "#6d3757"
-        PINK = "#cc4a8a"
-        TEAL = "#659bfc"
+        PURPLE = "#a20183"
+        PINK = "#ed30d2"
+        TEAL = "#adfffe"
         colorList = [BLACK, RED, ORANGE,
                      YELLOW, GREEN,
                      BLUE, PURPLE,
