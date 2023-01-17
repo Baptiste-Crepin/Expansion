@@ -34,11 +34,14 @@ class GraphicalInterfaces():
         self.loadbutton()
 
         self.canvas.bind('<Button-1>', self.placePawn)
-        btn = tk.Button(self.root, text="New board",
+        btn = tk.Button(self.root, text="New board",font=("Arial",15),
                         command=self.nvplateau)
         btn.pack()
 
+        style = ttk.Style()
+        style.configure("MyCheckbutton.TCheckbutton", font=("Arial", 15))
         ttk.Checkbutton(self.root,
+                        style="MyCheckbutton.TCheckbutton",
                         text='Do you want bots ?',
                         command=self.botornot,
                         variable=self.agreement,
@@ -138,8 +141,9 @@ class GraphicalInterfaces():
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int):
         label = tk.Label(self.root, text=text)
+        label.config(font="Arial")
         label.pack()
-        spinbox = tk.Spinbox(self.root, from_=min, to=max)
+        spinbox = tk.Spinbox(self.root, from_=min, to=max) 
         spinbox.pack()
         if state:
             spinbox.config(validate="key", validatecommand=(
@@ -173,11 +177,13 @@ class GraphicalInterfaces():
     def savebutton(self):
         save_button = tk.Button(
             self.root, text="Save game", command=self.saveGame)
+        save_button.config(font=("Arial",15))
         save_button.pack()
 
     def loadbutton(self):
         load_button = tk.Button(
             self.root, text="Load game", command=self.loadGame)
+        load_button.config(font=("Arial",15))
         load_button.pack()
 
     def saveGame(self):
