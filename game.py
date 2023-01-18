@@ -284,6 +284,13 @@ class Jeu():
             self.setHeight(height)
             self.setCurrentPlayerN(currentPlayerN)
             self.setCurrentPlayer(self.getPlayerList()[currentPlayerN])
+            self.setNextPlayerN(currentPlayerN)
+
+            if currentPlayerN+1 < len(self.getPlayerList())-1:
+                self.setNextPlayerN(currentPlayerN + 1)
+            else:
+                self.setNextPlayerN(0)
+            self.setNextPlayer(self.getPlayerList()[currentPlayerN])
 
 
 def intInput(message: str) -> int:
