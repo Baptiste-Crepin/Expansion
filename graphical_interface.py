@@ -30,15 +30,10 @@ class GraphicalInterfaces():
                                            "Number of player :", 2, 8)
         self.spinboxB = self.createSpinbox(False,
                                            "Number of bots :", 1, 7)
-        self.savebutton()
-        self.loadbutton()
 
         self.canvas.bind('<Button-1>', self.placePawn)
         self.spinboxJ.bind("<ButtonRelease-1>",
                            lambda event: self.root.after(1, self.update_max, self.spinboxJ, self.spinboxB))
-        btn = tk.Button(self.root, text="New board", font=("Arial", 15),
-                        command=self.nvplateau)
-        btn.pack()
 
         style = ttk.Style()
         style.configure("MyCheckbutton.TCheckbutton", font=("Arial", 15))
@@ -50,6 +45,10 @@ class GraphicalInterfaces():
                         onvalue='Bot added',
                         offvalue='Bot removed'
                         ).pack()
+
+        self.NewGridButton = self.createButton("New board", self.nvplateau)
+        self.SaveButton = self.createButton("Save game", self.saveGame)
+        self.LoadGridButton = self.createButton("Load game", self.loadGame)
 
     def initializeCanvas(self):
         self.rectangles = []
@@ -148,7 +147,7 @@ class GraphicalInterfaces():
         label = tk.Label(self.root, text=text)
         label.config(font="Arial")
         label.pack()
-        spinbox = tk.Spinbox(self.root, from_=min, to=max)
+        spinbox = tk.Spinbox(self.root, from_=min, to=max, width=3)
         spinbox.pack()
         if state:
             spinbox.config(validate="key", validatecommand=(
@@ -160,7 +159,6 @@ class GraphicalInterfaces():
         return spinbox
 
     def botornot(self):
-        tk.messagebox.showinfo(title='Result', message=self.agreement.get())
         if self.agreement.get() == 'Bot added':
             self.spinboxB.config(state='normal')
             self.spinboxJ.config(from_=1)
@@ -192,17 +190,13 @@ class GraphicalInterfaces():
         spinbox2.config(to=8-value)
         spinbox2.config(from_=1)
 
-    def savebutton(self):
-        save_button = tk.Button(
-            self.root, text="Save game", command=self.saveGame)
-        save_button.config(font=("Arial", 15))
-        save_button.pack()
-
-    def loadbutton(self):
-        load_button = tk.Button(
-            self.root, text="Load game", command=self.loadGame)
-        load_button.config(font=("Arial", 15))
-        load_button.pack()
+    def createButton(self, text: str, command):
+        print(type(command))
+        button = tk.Button(
+            self.root, text=text, command=command)
+        button.config(font=("Arial", 15))
+        button.pack()
+        return button
 
     def saveGame(self):
         self.grid.saveGame()
