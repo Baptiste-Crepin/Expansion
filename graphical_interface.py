@@ -115,8 +115,11 @@ class GraphicalInterfaces():
         self.grid.NextPlayer()
 
         if self.grid.checkWin():
-            winner = self.grid.getPlayerList()[0].getNumber()
-            messagebox.showinfo("Winner", f"The winner is {winner}")
+            self.root.after(1, self.displayWinner)
+
+    def displayWinner(self):
+        winner = self.grid.getPlayerList()[0].getNumber()
+        messagebox.showinfo("Winner", f"The winner is {winner}")
 
     def clear(self):
         for i, row in enumerate(self.grid.getGrid()):
