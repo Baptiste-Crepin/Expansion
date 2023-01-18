@@ -22,29 +22,36 @@ class GraphicalInterfaces():
         self.canvas.pack()
         self.initializeCanvas()
 
-        self.spinbox1 = self.createSpinbox(True,
-                                           "Enter the height of the board :", 3, 10)
-        self.spinbox2 = self.createSpinbox(True,
-                                           "Enter the width of the board :", 3, 12)
-        self.spinboxJ = self.createSpinbox(True,
-                                           "Number of player :", 2, 8)
-        self.spinboxB = self.createSpinbox(False,
-                                           "Number of bots :", 1, 7)
+        self.DimensionsFrame = tk.Frame(self.root)
+        self.DimensionsFrame.pack(side="top")
+        self.nbPlayersFrame = tk.Frame(self.root)
+        self.nbPlayersFrame.pack(side="top")
 
-        self.canvas.bind('<Button-1>', self.placePawn)
-        self.spinboxJ.bind("<ButtonRelease-1>",
-                           lambda event: self.root.after(1, self.update_max, self.spinboxJ, self.spinboxB))
+        self.spinboxHeight = self.createSpinbox(True,
+                                                "Enter the height of the board :", 3, 10, self.DimensionsFrame, "left")
+        gap = tk.Label(self.DimensionsFrame, width=10)
+        gap.pack(side="left")
+        self.spinboxWidth = self.createSpinbox(True,
+                                               "Enter the width of the board :", 3, 12, self.DimensionsFrame, "left")
+
+        self.spinboxPlayer = self.createSpinbox(True,
+                                                "Number of player :", 2, 8, self.nbPlayersFrame, "left")
+        gap = tk.Label(self.nbPlayersFrame, width=10)
+        gap.pack(side="left")
 
         style = ttk.Style()
-        style.configure("MyCheckbutton.TCheckbutton", font=("Arial", 15))
-        ttk.Checkbutton(self.root,
+        style.configure("MyCheckbutton.TCheckbutton", font=("Arial", 20))
+        ttk.Checkbutton(self.nbPlayersFrame,
                         style="MyCheckbutton.TCheckbutton",
                         text='Do you want bots ?',
                         command=self.botornot,
                         variable=self.agreement,
                         onvalue='Bot added',
                         offvalue='Bot removed'
-                        ).pack()
+                        ).pack(side="bottom")
+
+        self.spinboxBots = self.createSpinbox(False,
+                                              "Number of bots :", 1, 7, self.nbPlayersFrame, "left")
 
         self.SaveFrame = tk.Frame(self.root)
         self.SaveFrame.pack(side="bottom")
@@ -55,7 +62,11 @@ class GraphicalInterfaces():
 
         self.newGridButton = self.createButton(
             "New board", self.nvplateau, self.root, "bottom")
-        self.newGridButton.configure(width=34)
+        self.newGridButton.configure(width=33)
+
+        self.canvas.bind('<Button-1>', self.placePawn)
+        self.spinboxPlayer.bind("<ButtonRelease-1>",
+                                lambda event: self.root.after(1, self.update_max, self.spinboxPlayer, self.spinboxBots))
 
     def initializeCanvas(self):
         self.rectangles = []
@@ -137,11 +148,11 @@ class GraphicalInterfaces():
 
     def nvplateau(self):
         messagebox.showinfo("Board update", "The board has been updated")
-        height = int(self.spinbox1.get())
-        width = int(self.spinbox2.get())
-        nbPlayer = int(self.spinboxJ.get())
+        height = int(self.spinboxHeight.get())
+        width = int(self.spinboxWidth.get())
+        nbPlayer = int(self.spinboxPlayer.get())
         bots = self.botornot()
-        nbBots = int(self.spinboxB.get())
+        nbBots = int(self.spinboxBots.get())
 
         self.clear()
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
@@ -152,12 +163,13 @@ class GraphicalInterfaces():
         self.canvas.pack()
         self.update()
 
-    def createSpinbox(self, state: bool, text: str, min: int, max: int):
-        label = tk.Label(self.root, text=text)
-        label.config(font="Arial")
-        label.pack()
-        spinbox = tk.Spinbox(self.root, from_=min, to=max, width=2)
-        spinbox.pack()
+    def createSpinbox(self, state: bool, text: str, min: int, max: int, frame, side: str = "top"):
+        label = tk.Label(frame, text=text)
+        label.config(font=("Arial", 20))
+        label.pack(side=side)
+        spinbox = tk.Spinbox(frame, from_=min, to=max, width=2)
+        spinbox.config(font=("Arial", 20))
+        spinbox.pack(side=side)
         if state:
             spinbox.config(validate="key", validatecommand=(
                 spinbox.register(self.validation), "%P"))
@@ -169,14 +181,14 @@ class GraphicalInterfaces():
 
     def botornot(self):
         if self.agreement.get() == 'Bot added':
-            self.spinboxB.config(state='normal')
-            self.spinboxJ.config(from_=1)
-            self.spinboxJ.config(to=7)
+            self.spinboxBots.config(state='normal')
+            self.spinboxPlayer.config(from_=1)
+            self.spinboxPlayer.config(to=7)
             return True
         else:
-            self.spinboxB.config(state='disabled')
-            self.spinboxJ.config(from_=2)
-            self.spinboxJ.config(to=8)
+            self.spinboxBots.config(state='disabled')
+            self.spinboxPlayer.config(from_=2)
+            self.spinboxPlayer.config(to=8)
             return False
 
     def validation(self, new_text):
@@ -202,7 +214,7 @@ class GraphicalInterfaces():
     def createButton(self, text: str, command, frame, direction="top"):
         button = tk.Button(
             frame, text=text, command=command)
-        button.config(font=("Arial", 15), height=2, width=15)
+        button.config(font=("Arial", 20), height=2, width=15)
         button.pack(side=direction)
         return button
 
