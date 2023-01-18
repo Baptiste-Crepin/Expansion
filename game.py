@@ -259,6 +259,8 @@ class Jeu():
         with open('./savefile.exp', 'r') as file:
             # width: int, height: int, nbPlayer: int, bots: bool, nbBots: int = 0
             lines = file.readlines()
+            if len(lines) == 0:
+                return False
             # Get the second line
             width = int(lines[0])
             height = int(lines[1])

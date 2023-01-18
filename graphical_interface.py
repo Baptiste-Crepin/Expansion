@@ -233,6 +233,9 @@ class GraphicalInterfaces():
         # self.grid.display()
 
     def loadGame(self):
+        if self.grid.loadGame() == False:
+            messagebox.showinfo("No Savefile", "You don't have any saved game")
+            return
         self.clear()
         self.grid.loadGame()
         self.canvas.configure(width=self.grid.getWidth()
