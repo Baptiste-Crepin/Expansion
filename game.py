@@ -175,7 +175,6 @@ class Jeu():
         cell = self.getCell(coord)
 
         if cell.getPlayer().getNumber() != 0 and cell.getPlayer().getNumber() != player.getNumber():
-            print(cell.getPlayer(), player)
             return False
 
         cell.setPawnNumber(cell.getPawnNumber() + 1)

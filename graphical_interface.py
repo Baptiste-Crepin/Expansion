@@ -110,11 +110,13 @@ class GraphicalInterfaces():
             coordo = self.grid.getCurrentPlayer().pickCoordo(self.grid)
             while self.grid.placePawn(coordo, self.grid.getCurrentPlayer()) == False:
                 coordo = self.grid.getCurrentPlayer().pickCoordo(self.grid)
+            self.grid.expandPawn(coordo,
+                                 self.grid.getCurrentPlayer())
         else:
             if self.grid.placePawn((selectedRow, selectedCol), self.grid.getCurrentPlayer()) == False:
                 return
-        self.grid.expandPawn((selectedRow, selectedCol),
-                             self.grid.getCurrentPlayer())
+            self.grid.expandPawn((selectedRow, selectedCol),
+                                 self.grid.getCurrentPlayer())
 
         # self.grid.display()
         self.update()
