@@ -34,6 +34,8 @@ class GraphicalInterfaces():
         self.loadbutton()
 
         self.canvas.bind('<Button-1>', self.placePawn)
+        self.spinboxJ.bind("<ButtonRelease-1>",
+                           lambda event: self.root.after(1, self.update_max, self.spinboxJ, self.spinboxB))
         btn = tk.Button(self.root, text="New board", font=("Arial", 15),
                         command=self.nvplateau)
         btn.pack()
@@ -83,8 +85,6 @@ class GraphicalInterfaces():
                 self.canvas.itemconfig(
                     self.image_container[i][j], image=self.casePNG[score_case])
 
-                print("\n"*10, self.grid.getCurrentPlayer(),
-                      self.grid.getNextPlayer())
                 self.canvas.itemconfig(
                     self.rectangles[i][j],
                     outline=self.grid.getNextPlayer().getColor(),
@@ -163,9 +163,13 @@ class GraphicalInterfaces():
         tk.messagebox.showinfo(title='Result', message=self.agreement.get())
         if self.agreement.get() == 'Bot added':
             self.spinboxB.config(state='normal')
+            self.spinboxJ.config(from_=1)
+            self.spinboxJ.config(to=7)
             return True
         else:
             self.spinboxB.config(state='disabled')
+            self.spinboxJ.config(from_=2)
+            self.spinboxJ.config(to=8)
             return False
 
     def validation(self, new_text):
@@ -178,6 +182,13 @@ class GraphicalInterfaces():
 
     def ignore_input(self, event):
         return "break"
+
+    def update_max(self, spinbox1, spinbox2):
+        value = int(spinbox1.get())
+        if 8-value == 1:
+            spinbox2.config(from_=0)
+        spinbox2.config(to=8-value)
+        spinbox2.config(from_=1)
 
     def savebutton(self):
         save_button = tk.Button(

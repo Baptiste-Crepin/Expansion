@@ -21,7 +21,7 @@ class Player():
     def setColorFromNumber(self) -> None:
         BLACK = "#FFFFFF"
         RED = "#fe001c"
-        ORANGE = "#d26f34"
+        ORANGE = "#964B00"
         YELLOW = "#efe743"
         GREEN = "#639d39"
         BLUE = "#1a6baa"
