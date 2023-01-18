@@ -78,8 +78,8 @@ class GraphicalInterfaces():
             self.image_container.append([])
 
             for j in range(self.grid.getWidth()):
-                x0 = j * 38 + 5
-                y0 = i * 38 + 5
+                x0 = j * 38 + 4
+                y0 = i * 38 + 4
                 x1 = x0 + 38
                 y1 = y0 + 38
                 xi = (x1-x0)/2+x0
@@ -94,7 +94,9 @@ class GraphicalInterfaces():
                 self.canvas.itemconfig(
                     self.rectangles[i][j], fill=cell.getPlayer().getColor())
 
-    def update(self):
+        self.update(True)
+
+    def update(self, first=False):
         for i, row in enumerate(self.grid.getGrid()):
             for j, cell in enumerate(row):
                 if cell.getPawnNumber() < 4:
@@ -103,12 +105,16 @@ class GraphicalInterfaces():
                     score_case = 3
                 self.canvas.itemconfig(
                     self.image_container[i][j], image=self.casePNG[score_case])
-
                 self.canvas.itemconfig(
                     self.rectangles[i][j],
                     outline=self.grid.getNextPlayer().getColor(),
                     fill=cell.getPlayer().getColor()
                 )
+                if first:
+                    self.canvas.itemconfig(
+                        self.rectangles[i][j],
+                        outline=self.grid.getCurrentPlayer().getColor(),
+                    )
 
     def placePawn(self, event):
 
@@ -227,12 +233,12 @@ class GraphicalInterfaces():
         # self.grid.display()
 
     def loadGame(self):
+        self.clear()
         self.grid.loadGame()
         self.canvas.configure(width=self.grid.getWidth()
                               * 40, height=self.grid.getHeight()*40)
         # self.grid.display()
         self.initializeCanvas()
-        self.update()
 
 
 if __name__ == "__main__":

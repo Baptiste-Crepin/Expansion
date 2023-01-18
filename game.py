@@ -285,11 +285,11 @@ class Jeu():
             self.setCurrentPlayer(self.getPlayerList()[currentPlayerN])
             self.setNextPlayerN(currentPlayerN)
 
-            if currentPlayerN+1 < len(self.getPlayerList())-1:
+            if currentPlayerN+1 < len(self.getPlayerList()):
                 self.setNextPlayerN(currentPlayerN + 1)
             else:
                 self.setNextPlayerN(0)
-            self.setNextPlayer(self.getPlayerList()[currentPlayerN])
+            self.setNextPlayer(self.getPlayerList()[self.getNextPlayerN()])
 
 
 def intInput(message: str) -> int:
