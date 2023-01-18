@@ -121,7 +121,7 @@ class Jeu():
             bots = [Bot(len(playerList)+x+1)
                     for x in range(self.getNumberOfBots())]
             playerList += bots
-        self.__PlayerList = playerList
+        self.setPlayerList(playerList)
 
     def display(self) -> None:
         for row in self.getGrid():
@@ -231,9 +231,9 @@ class Jeu():
 
     def checkWin(self):
         winner = None
-        if len(self.__PlayerList) == 1:
-            winner = self.__PlayerList[0]
-        for player in self.__PlayerList:
+        if len(self.getPlayerList()) == 1:
+            winner = self.getPlayerList()[0]
+        for player in self.getPlayerList():
             if all(case.getPlayer() == player for row in self.__grid for case in row):
                 winner = player
                 break
@@ -268,7 +268,6 @@ class Jeu():
             bots = bool(lines[3])
             nbBots = int(lines[4])
             currentPlayerN = int(lines[5])
-            createGame(width, height, nbPlayer, bots, nbBots)
 
             grid = []
             for y in range(height):
@@ -283,6 +282,9 @@ class Jeu():
             self.setGrid(grid)
             self.setWidth(width)
             self.setHeight(height)
+            self.setNumberOfPlayers(nbPlayer)
+            self.setNumberOfBots(nbBots)
+            self.createPlayerList()
             self.setCurrentPlayerN(currentPlayerN)
             self.setCurrentPlayer(self.getPlayerList()[currentPlayerN])
             self.setNextPlayerN(currentPlayerN)

@@ -8,7 +8,7 @@ class GraphicalInterfaces():
         self.grid = game.createGame(12, 10, 2, False)
         self.root = tk.Tk()
         self.canvas = tk.Canvas(self.root, width=self.grid.getWidth() *
-                                40, height=self.grid.getHeight()*40)
+                                38, height=self.grid.getHeight()*38)
         self.agreement = tk.StringVar()
         self.rectangles = []
         self.image_container = []
@@ -71,6 +71,8 @@ class GraphicalInterfaces():
                                 lambda event: self.root.after(1, self.update_max, self.spinboxPlayer, self.spinboxBots))
 
     def initializeCanvas(self):
+        self.canvas.configure(width=self.grid.getWidth()
+                              * 38, height=self.grid.getHeight()*38)
         self.rectangles = []
         self.image_container = []
         for i in range(self.grid.getHeight()):
@@ -78,8 +80,8 @@ class GraphicalInterfaces():
             self.image_container.append([])
 
             for j in range(self.grid.getWidth()):
-                x0 = j * 38 + 4
-                y0 = i * 38 + 4
+                x0 = j * 38
+                y0 = i * 38
                 x1 = x0 + 38
                 y1 = y0 + 38
                 xi = (x1-x0)/2+x0
@@ -149,6 +151,7 @@ class GraphicalInterfaces():
         messagebox.showinfo("Winner", f"The winner is {winner}")
 
     def clear(self):
+        self.grid.display()
         for i, row in enumerate(self.grid.getGrid()):
             for j, cell in enumerate(row):
                 self.canvas.delete(self.rectangles[i][j])
@@ -165,8 +168,6 @@ class GraphicalInterfaces():
         self.clear()
         self.grid = game.createGame(width, height, nbPlayer, bots, nbBots)
         self.initializeCanvas()
-        self.canvas.configure(width=self.grid.getWidth()
-                              * 40, height=self.grid.getHeight()*40)
         self.canvas.pack()
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int, frame, side: str = "top"):
@@ -233,13 +234,14 @@ class GraphicalInterfaces():
         # self.grid.display()
 
     def loadGame(self):
+        self.clear()
+
         if self.grid.loadGame() == False:
             messagebox.showinfo("No Savefile", "You don't have any saved game")
+            self.update()
             return
-        self.clear()
+
         self.grid.loadGame()
-        self.canvas.configure(width=self.grid.getWidth()
-                              * 40, height=self.grid.getHeight()*40)
         # self.grid.display()
         self.initializeCanvas()
 
