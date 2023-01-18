@@ -156,7 +156,7 @@ class GraphicalInterfaces():
 
     def botornot(self):
         tk.messagebox.showinfo(title='Result', message=self.agreement.get())
-        if self.agreement.get() == 'Addings bots':
+        if self.agreement.get() == 'Bot added':
             self.spinboxB.config(state='normal')
             return True
         else:
