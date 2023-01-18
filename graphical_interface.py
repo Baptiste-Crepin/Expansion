@@ -65,10 +65,10 @@ class GraphicalInterfaces():
             self.image_container.append([])
 
             for j in range(self.grid.getWidth()):
-                x0 = j * 40
-                y0 = i * 40
-                x1 = x0 + 40
-                y1 = y0 + 40
+                x0 = j * 38 + 5
+                y0 = i * 38 + 5
+                x1 = x0 + 38
+                y1 = y0 + 38
                 xi = (x1-x0)/2+x0
                 yi = (y1-y0)/2+y0
                 self.rectangles[i].append(self.canvas.create_rectangle(
@@ -100,8 +100,8 @@ class GraphicalInterfaces():
     def placePawn(self, event):
 
         x, y = event.x, event.y
-        selectedRow = y // 40
-        selectedCol = x // 40
+        selectedRow = y // 38
+        selectedCol = x // 38
 
         if self.grid.checkWin():
             return
@@ -210,6 +210,8 @@ class GraphicalInterfaces():
 
     def loadGame(self):
         self.grid.loadGame()
+        self.canvas.configure(width=self.grid.getWidth()
+                              * 40, height=self.grid.getHeight()*40)
         # self.grid.display()
         self.initializeCanvas()
         self.update()
