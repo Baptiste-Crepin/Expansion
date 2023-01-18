@@ -185,6 +185,8 @@ class GraphicalInterfaces():
 
     def update_max(self, spinbox1, spinbox2):
         value = int(spinbox1.get())
+        if value >= 8:
+            return
         if 8-value == 1:
             spinbox2.config(from_=0)
         spinbox2.config(to=8-value)
