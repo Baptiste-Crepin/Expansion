@@ -147,8 +147,9 @@ class GraphicalInterfaces():
             self.root.after(1, self.displayWinner)
 
     def displayWinner(self):
-        winner = self.grid.getPlayerList()[0].getNumber()
-        messagebox.showinfo("Winner", f"The winner is {winner}")
+        winner = self.grid.getPlayerList()[0]
+        messagebox.showinfo(
+            "Winner", f"Player {winner.getNumber()} Won the game")
 
     def clear(self):
         self.grid.display()
