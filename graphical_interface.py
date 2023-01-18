@@ -46,9 +46,16 @@ class GraphicalInterfaces():
                         offvalue='Bot removed'
                         ).pack()
 
-        self.NewGridButton = self.createButton("New board", self.nvplateau)
-        self.SaveButton = self.createButton("Save game", self.saveGame)
-        self.LoadGridButton = self.createButton("Load game", self.loadGame)
+        self.SaveFrame = tk.Frame(self.root)
+        self.SaveFrame.pack(side="bottom")
+        self.saveButton = self.createButton(
+            "Save game", self.saveGame, self.SaveFrame,  "left")
+        self.loadGridButton = self.createButton(
+            "Load game", self.loadGame, self.SaveFrame, "left")
+
+        self.newGridButton = self.createButton(
+            "New board", self.nvplateau, self.root, "bottom")
+        self.newGridButton.configure(width=34)
 
     def initializeCanvas(self):
         self.rectangles = []
@@ -139,7 +146,7 @@ class GraphicalInterfaces():
         self.initializeCanvas()
         self.canvas.configure(width=self.grid.getWidth()
                               * 40, height=self.grid.getHeight()*40)
-        self.canvas.configure(outline=self.grid.getCurrentPlayer().getColor())
+        # self.canvas.configure(outline=self.grid.getCurrentPlayer().getColor())
         self.canvas.pack()
         self.update()
 
@@ -147,7 +154,7 @@ class GraphicalInterfaces():
         label = tk.Label(self.root, text=text)
         label.config(font="Arial")
         label.pack()
-        spinbox = tk.Spinbox(self.root, from_=min, to=max, width=3)
+        spinbox = tk.Spinbox(self.root, from_=min, to=max, width=2)
         spinbox.pack()
         if state:
             spinbox.config(validate="key", validatecommand=(
@@ -190,12 +197,11 @@ class GraphicalInterfaces():
         spinbox2.config(to=8-value)
         spinbox2.config(from_=1)
 
-    def createButton(self, text: str, command):
-        print(type(command))
+    def createButton(self, text: str, command, frame, direction="top"):
         button = tk.Button(
-            self.root, text=text, command=command)
-        button.config(font=("Arial", 15))
-        button.pack()
+            frame, text=text, command=command)
+        button.config(font=("Arial", 15), height=2, width=15)
+        button.pack(side=direction)
         return button
 
     def saveGame(self):
