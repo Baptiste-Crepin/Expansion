@@ -85,7 +85,7 @@ class GraphicalInterfaces():
                 xi = (x1-x0)/2+x0
                 yi = (y1-y0)/2+y0
                 self.rectangles[i].append(self.canvas.create_rectangle(
-                    x0, y0, x1, y1, outline=self.grid.getCurrentPlayer(), width=2))
+                    x0, y0, x1, y1, outline=self.grid.getCurrentPlayer().getColor(), width=2))
                 self.image_container[i].append(
                     self.canvas.create_image(xi, yi, image=self.casePNG[0]))
 
@@ -161,9 +161,7 @@ class GraphicalInterfaces():
         self.initializeCanvas()
         self.canvas.configure(width=self.grid.getWidth()
                               * 40, height=self.grid.getHeight()*40)
-        # self.canvas.configure(outline=self.grid.getCurrentPlayer().getColor())
         self.canvas.pack()
-        self.update()
 
     def createSpinbox(self, state: bool, text: str, min: int, max: int, frame, side: str = "top"):
         label = tk.Label(frame, text=text)
