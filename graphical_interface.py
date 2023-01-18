@@ -27,31 +27,33 @@ class GraphicalInterfaces():
         self.nbPlayersFrame = tk.Frame(self.root)
         self.nbPlayersFrame.pack(side="top")
 
-        self.spinboxHeight = self.createSpinbox(True,
-                                                "Enter the height of the board :", 3, 10, self.DimensionsFrame, "left")
+        (self.spinboxHeightLabel, self.spinboxHeight) = self.createSpinbox(True,
+                                                                           "Enter the height of the board :", 3, 10, self.DimensionsFrame, "left")
         gap = tk.Label(self.DimensionsFrame, width=10)
         gap.pack(side="left")
-        self.spinboxWidth = self.createSpinbox(True,
-                                               "Enter the width of the board :", 3, 12, self.DimensionsFrame, "left")
+        (self.spinboxWidthLabel, self.spinboxWidth) = self.createSpinbox(True,
+                                                                         "Enter the width of the board :", 3, 12, self.DimensionsFrame, "left")
 
-        self.spinboxPlayer = self.createSpinbox(True,
-                                                "Number of player :", 2, 8, self.nbPlayersFrame, "left")
+        (self.spinboxPlayerLabel, self.spinboxPlayer) = self.createSpinbox(True,
+                                                                           "Number of player :", 2, 8, self.nbPlayersFrame, "left")
         gap = tk.Label(self.nbPlayersFrame, width=10)
         gap.pack(side="left")
 
         style = ttk.Style()
         style.configure("MyCheckbutton.TCheckbutton", font=("Arial", 20))
-        ttk.Checkbutton(self.nbPlayersFrame,
-                        style="MyCheckbutton.TCheckbutton",
-                        text='Do you want bots ?',
-                        command=self.botornot,
-                        variable=self.agreement,
-                        onvalue='Bot added',
-                        offvalue='Bot removed'
-                        ).pack(side="bottom")
+        checkbox = ttk.Checkbutton(self.nbPlayersFrame,
+                                   style="MyCheckbutton.TCheckbutton",
+                                   text='Do you want bots ?',
+                                   command=self.botornot,
+                                   variable=self.agreement,
+                                   onvalue='Bot added',
+                                   offvalue='Bot removed'
+                                   ).pack(side="top")
 
-        self.spinboxBots = self.createSpinbox(False,
-                                              "Number of bots :", 1, 7, self.nbPlayersFrame, "left")
+        (self.spinboxBotsLabel, self.spinboxBots) = self.createSpinbox(False,
+                                                                       "Number of bots :", 1, 7, self.nbPlayersFrame, "left")
+
+        self.botornot()
 
         self.SaveFrame = tk.Frame(self.root)
         self.SaveFrame.pack(side="bottom")
@@ -61,7 +63,7 @@ class GraphicalInterfaces():
             "Load game", self.loadGame, self.SaveFrame, "left")
 
         self.newGridButton = self.createButton(
-            "New board", self.nvplateau, self.root, "bottom")
+            "New board", self.newBoard, self.root, "bottom")
         self.newGridButton.configure(width=33)
 
         self.canvas.bind('<Button-1>', self.placePawn)
@@ -146,7 +148,7 @@ class GraphicalInterfaces():
                 self.canvas.delete(self.rectangles[i][j])
                 self.canvas.delete(self.image_container[i][j])
 
-    def nvplateau(self):
+    def newBoard(self):
         messagebox.showinfo("Board update", "The board has been updated")
         height = int(self.spinboxHeight.get())
         width = int(self.spinboxWidth.get())
@@ -177,16 +179,20 @@ class GraphicalInterfaces():
             spinbox.config(state='disabled', validate="key", validatecommand=(
                 spinbox.register(self.validation), "%P"))
         spinbox.bind("<Key>", self.ignore_input)
-        return spinbox
+        return (label, spinbox)
 
     def botornot(self):
         if self.agreement.get() == 'Bot added':
             self.spinboxBots.config(state='normal')
+            self.spinboxBots.pack(side="right")
+            self.spinboxBotsLabel.pack()
             self.spinboxPlayer.config(from_=1)
             self.spinboxPlayer.config(to=7)
             return True
         else:
-            self.spinboxBots.config(state='disabled')
+            # self.spinboxBots.config(state='disabled')
+            self.spinboxBots.pack_forget()
+            self.spinboxBotsLabel.pack_forget()
             self.spinboxPlayer.config(from_=2)
             self.spinboxPlayer.config(to=8)
             return False
